@@ -27,7 +27,7 @@ function EmailsList() {
       // Використання axios.delete з конфігурацією для включення тіла запиту
       await axios.delete(`/api/emails`, { data: { id } });
       // Оновлення стану для відображення змін без перезавантаження
-      setProjects(emails.filter((email) => email._id !== id));
+      setEmails(emails.filter((email) => email._id !== id));
     } catch (error) {
       console.error(
         "Could not delete project",
