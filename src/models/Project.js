@@ -30,6 +30,7 @@ const ProjectSchema = new Schema({
   ftpSsh: { type: ftpSshSchema, required: false },
   github: { type: CredentialsSchema, required: false },
   wpAdmin: { type: CredentialsSchema, required: false },
+  testAccess: { type: CredentialsSchema, required: false },
   registerDate:{ type: String, required: false },
   expiredDate:{ type: String, required: false },
   projectsCategory:{ type: Schema.Types.ObjectId, ref: "ProjectsCategory", required: true }

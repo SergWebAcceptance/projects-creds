@@ -100,6 +100,10 @@ function ProjectForm({ projectData, editable = true }) {
             login: values.wpAdminLogin,
             password: values.wpAdminPassword,
           },
+          testAccess: {
+            login: values.testAccessLogin,
+            password: values.testAccessPassword,
+          },
           registerDate: values.registerDate,
           expiredDate: values.expiredDate,
           projectsCategory: values.projectsCategory,
@@ -129,6 +133,10 @@ function ProjectForm({ projectData, editable = true }) {
           wpAdmin: {
             login: values.wpAdminLogin,
             password: values.wpAdminPassword,
+          },
+          testAccess: {
+            login: values.testAccessLogin,
+            password: values.testAccessPassword,
           },
           registerDate: values.registerDate,
           expiredDate: values.expiredDate,
@@ -166,6 +174,14 @@ function ProjectForm({ projectData, editable = true }) {
           projectData && projectData.wpAdmin
             ? projectData.wpAdmin.password
             : "",
+        testAccessLogin:
+          projectData && projectData.testAccess
+            ? projectData.testAccess.login
+            : "",
+        testAccessPassword:
+          projectData && projectData.testAccess
+            ? projectData.testAccess.password
+            : "",
         dnsLogin: projectData && projectData.dns ? projectData.dns.login : "",
         dnsPassword:
           projectData && projectData.dns ? projectData.dns.password : "",
@@ -181,12 +197,16 @@ function ProjectForm({ projectData, editable = true }) {
         expiredDate:
           projectData && projectData.expiredDate ? projectData.expiredDate : "",
         projectsCategory: projectData ? projectData.projectsCategory._id : "",
-        ftpSshProtocol: projectData && projectData.ftpSsh ? projectData.ftpSsh.protocol : "",
-        ftpSshHost: projectData && projectData.ftpSsh ? projectData.ftpSsh.host : "",
-        ftpSshLogin: projectData && projectData.ftpSsh ? projectData.ftpSsh.login : "",
+        ftpSshProtocol:
+          projectData && projectData.ftpSsh ? projectData.ftpSsh.protocol : "",
+        ftpSshHost:
+          projectData && projectData.ftpSsh ? projectData.ftpSsh.host : "",
+        ftpSshLogin:
+          projectData && projectData.ftpSsh ? projectData.ftpSsh.login : "",
         ftpSshPassword:
           projectData && projectData.ftpSsh ? projectData.ftpSsh.password : "",
-        ftpSshPort: projectData && projectData.ftpSsh ? projectData.ftpSsh.port : "",
+        ftpSshPort:
+          projectData && projectData.ftpSsh ? projectData.ftpSsh.port : "",
       }}
       onSubmit={handleSubmit}
     >
@@ -361,11 +381,15 @@ function ProjectForm({ projectData, editable = true }) {
                 ) : (
                   <div className="flex gap-4">
                     <Field
-                      value={
-                        projectData
-                          ? `${projectData.hosting.name} `
-                          : ""
-                      }
+                      value={projectData ? `${projectData.hosting.name} ` : ""}
+                      disabled={!editable}
+                      type="text"
+                      name="hostingPlaceholder"
+                      placeholder="hosting"
+                      className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                    />
+                    <Field
+                      value={projectData ? `${projectData.hosting.login}` : ""}
                       disabled={!editable}
                       type="text"
                       name="hostingPlaceholder"
@@ -374,21 +398,7 @@ function ProjectForm({ projectData, editable = true }) {
                     />
                     <Field
                       value={
-                        projectData
-                          ? `${projectData.hosting.login}`
-                          : ""
-                      }
-                      disabled={!editable}
-                      type="text"
-                      name="hostingPlaceholder"
-                      placeholder="hosting"
-                      className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                    />
-                    <Field
-                      value={
-                        projectData
-                          ? `${projectData.hosting.password}`
-                          : ""
+                        projectData ? `${projectData.hosting.password}` : ""
                       }
                       disabled={!editable}
                       type="text"
@@ -423,7 +433,7 @@ function ProjectForm({ projectData, editable = true }) {
 
           <div
             className={`space-y-2 ${
-              projectData ? (projectData.wpAdmin.login ? "" : "hidden") : ""
+              projectData && !editable ? (projectData.wpAdmin.login ? "" : "hidden") : ""
             }`}
           >
             <h2>Wordpress Account</h2>
@@ -447,7 +457,31 @@ function ProjectForm({ projectData, editable = true }) {
 
           <div
             className={`space-y-2 ${
-              projectData ? (projectData.dns.login ? "" : "hidden") : ""
+              projectData && !editable ? (projectData.testAccess ? "" : "hidden") : ""
+            }`}
+          >
+            <h2>Test Wordpress Account</h2>
+            <div className="flex gap-4">
+              <Field
+                disabled={!editable}
+                type="text"
+                name="testAccessLogin"
+                placeholder="wtestAccessLogin"
+                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+              />
+              <Field
+                disabled={!editable}
+                type="text"
+                name="testAccessPassword"
+                placeholder="testAccessPassword"
+                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+              />
+            </div>
+          </div>
+
+          <div
+            className={`space-y-2 ${
+              projectData && !editable ? (projectData.dns ? "" : "hidden") : ""
             }`}
           >
             <h2>DNS Account</h2>
@@ -478,12 +512,12 @@ function ProjectForm({ projectData, editable = true }) {
 
           <div
             className={`space-y-2 ${
-              projectData ? (projectData.dns.login ? "" : "hidden") : ""
+              projectData && !editable ? (projectData.ftpSsh ? "" : "hidden") : ""
             }`}
           >
             <h2>FTP/SSH Account</h2>
             <div className="flex gap-4">
-            <Field
+              <Field
                 disabled={!editable}
                 type="text"
                 name="ftpSshProtocol"
