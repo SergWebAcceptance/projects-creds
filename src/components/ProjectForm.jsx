@@ -155,8 +155,7 @@ function ProjectForm({ projectData, editable = true }) {
         dnsLogin: projectData && projectData.dns ? projectData.dns.login : "",
         dnsPassword:
           projectData && projectData.dns ? projectData.dns.password : "",
-        dnsName:
-          projectData && projectData.dns ? projectData.dns.name : "",
+        dnsName: projectData && projectData.dns ? projectData.dns.name : "",
         githubLogin:
           projectData && projectData.github ? projectData.github.login : "",
         githubPassword:
@@ -242,18 +241,44 @@ function ProjectForm({ projectData, editable = true }) {
                     }
                   />
                 ) : (
-                  <Field
-                    value={
-                      projectData
-                        ? `${projectData.domainRegistrar.login} - ${projectData.domainRegistrar.login}`
-                        : ""
-                    }
-                    disabled={!editable}
-                    type="text"
-                    name="hostingPlaceholder"
-                    placeholder="hosting"
-                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                  />
+                  <div className="flex gap-4">
+                    <Field
+                      value={
+                        projectData
+                          ? `${projectData.domainRegistrar.name} `
+                          : ""
+                      }
+                      disabled={!editable}
+                      type="text"
+                      name="hostingPlaceholder"
+                      placeholder="hosting"
+                      className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                    />
+                    <Field
+                      value={
+                        projectData
+                          ? `${projectData.domainRegistrar.login}`
+                          : ""
+                      }
+                      disabled={!editable}
+                      type="text"
+                      name="hostingPlaceholder"
+                      placeholder="hosting"
+                      className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                    />
+                    <Field
+                      value={
+                        projectData
+                          ? `${projectData.domainRegistrar.password}`
+                          : ""
+                      }
+                      disabled={!editable}
+                      type="text"
+                      name="hostingPlaceholder"
+                      placeholder="hosting"
+                      className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                    />
+                  </div>
                 )}
               </>
             )}
@@ -314,18 +339,44 @@ function ProjectForm({ projectData, editable = true }) {
                     }
                   />
                 ) : (
-                  <Field
-                    value={
-                      projectData
-                        ? `${projectData.hosting.login} - ${projectData.hosting.login}`
-                        : ""
-                    }
-                    disabled={!editable}
-                    type="text"
-                    name="hostingPlaceholder"
-                    placeholder="hosting"
-                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                  />
+                  <div className="flex gap-4">
+                    <Field
+                      value={
+                        projectData
+                          ? `${projectData.hosting.name} `
+                          : ""
+                      }
+                      disabled={!editable}
+                      type="text"
+                      name="hostingPlaceholder"
+                      placeholder="hosting"
+                      className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                    />
+                    <Field
+                      value={
+                        projectData
+                          ? `${projectData.hosting.login}`
+                          : ""
+                      }
+                      disabled={!editable}
+                      type="text"
+                      name="hostingPlaceholder"
+                      placeholder="hosting"
+                      className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                    />
+                    <Field
+                      value={
+                        projectData
+                          ? `${projectData.hosting.password}`
+                          : ""
+                      }
+                      disabled={!editable}
+                      type="text"
+                      name="hostingPlaceholder"
+                      placeholder="hosting"
+                      className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                    />
+                  </div>
                 )}
               </>
             )}
@@ -381,7 +432,7 @@ function ProjectForm({ projectData, editable = true }) {
           >
             <h2>DNS Account</h2>
             <div className="flex gap-4">
-            <Field
+              <Field
                 disabled={!editable}
                 type="text"
                 name="dnsName"
