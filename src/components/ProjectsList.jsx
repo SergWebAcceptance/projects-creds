@@ -150,7 +150,7 @@ function ProjectsList({category}) {
           </table>
         </div>
       ) : (
-        <p>No projects found.</p>
+        <p>Loading...</p>
       )}
     </div>
   );
