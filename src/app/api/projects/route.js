@@ -113,6 +113,7 @@ export async function GET(req, res) {
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
     const category = url.searchParams.get("category");
+    const search = url.searchParams.get("search");
 
     if (id) {
       // Якщо slug передано, шукаємо конкретний проект
@@ -129,22 +130,31 @@ export async function GET(req, res) {
       }
       return NextResponse.json({ project }, { status: 200 });
     } else if (category) {
+      let matchStage = {};
+      if (category) {
+        matchStage["projectsCategory.name"] = category;
+      }
+
+      // Додавання умови пошуку за доменом, якщо search присутній
+      if (search) {
+        matchStage["domain"] = { $regex: search, $options: "i" }; // Додавання нечутливого до регістру пошуку
+      }
+
       const projects = await Project.aggregate([
         {
           $lookup: {
-            from: "projectscategories", // the collection to join
-            localField: "projectsCategory", // field from the input documents
-            foreignField: "_id", // field from the documents of the "from" collection
-            as: "projectsCategory", // output array field
+            from: "projectscategories",
+            localField: "projectsCategory",
+            foreignField: "_id",
+            as: "projectsCategory",
           },
         },
         {
-          $unwind: "$projectsCategory", // Deconstructs the array
+          $unwind: "$projectsCategory",
         },
+        // Додавання умови пошуку
         {
-          $match: {
-            "projectsCategory.name": category, // Match condition
-          },
+          $match: matchStage,
         },
       ]);
 

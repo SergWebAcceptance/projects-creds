@@ -8,10 +8,13 @@ import { Eye, Trash2 } from "lucide-react";
 function ProjectsList() {
   const { projectsCategory, setProjectsCategory } = useProjects();
   const [projects, setProjects] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get(`/api/projects?category=${projectsCategory}`);
+        const response = await axios.get(
+          `/api/projects?category=${projectsCategory}&search=${searchQuery}`
+        );
         setProjects(response.data.projects);
         console.log(response.data);
       } catch (error) {
@@ -20,7 +23,7 @@ function ProjectsList() {
     };
 
     fetchProjects();
-  }, [projectsCategory]);
+  }, [projectsCategory, searchQuery]);
 
   const handleRemove = async (id) => {
     try {
@@ -39,6 +42,51 @@ function ProjectsList() {
 
   return (
     <div>
+      <div className="search-bar mb-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            // Optionally trigger a search directly when the form is submitted
+            // fetchProjects(searchQuery);
+          }}
+        >
+          <div className="relative">
+            <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              type="text"
+              id="Search"
+              placeholder="Search for..."
+              className="w-full border rounded-md border-gray-200 py-2.5 px-4 pe-10 shadow-sm sm:text-sm"
+            />
+
+            <span className="absolute inset-y-0 end-0 grid w-10 place-content-center">
+              <button
+                type="button"
+                className="text-gray-600 hover:text-gray-700"
+              >
+                <span className="sr-only">Search</span>
+
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="h-4 w-4"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                  />
+                </svg>
+              </button>
+            </span>
+          </div>
+        </form>
+      </div>
+
       {projects.length > 0 ? (
         <div className="overflow-x-auto">
           <div className="projects">
@@ -53,13 +101,13 @@ function ProjectsList() {
                     className="flex gap-2 items-center rounded-md bg-teal-600 px-2 py-2 text-sm font-medium text-white transition hover:bg-teal-700"
                     href={`/projects/${project._id}`}
                   >
-                    <Eye/>
+                    <Eye />
                   </Link>
                   <button
                     className="flex gap-2 items-center rounded-md bg-red-600 px-2 py-2 text-sm font-medium text-white transition hover:bg-red-700"
                     onClick={() => handleRemove(project._id)}
                   >
-                    <Trash2/>
+                    <Trash2 />
                   </button>
                 </div>
               </div>
