@@ -19,6 +19,7 @@ export async function POST(req) {
       registerDate,
       expiredDate,
       projectsCategory,
+      ftpSsh,
     } = await req.json();
 
     // Перевірте, чи існують domainRegistrar і hosting по ID
@@ -39,6 +40,7 @@ export async function POST(req) {
       registerDate,
       expiredDate,
       projectsCategory,
+      ftpSsh,
     });
 
     return new Response(JSON.stringify(newProject), { status: 201 });
@@ -64,6 +66,7 @@ export async function PATCH(req) {
       registerDate,
       expiredDate,
       projectsCategory,
+      ftpSsh,
     } = await req.json();
 
     // Перевірте, чи існують domainRegistrar і hosting по ID
@@ -87,6 +90,7 @@ export async function PATCH(req) {
           registerDate,
           expiredDate,
           projectsCategory,
+          ftpSsh,
         },
       }
     );

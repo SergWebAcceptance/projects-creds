@@ -10,6 +10,13 @@ const dnsSchema = new Schema({
   login: { type: String, required: false },
   password: { type: String, required: false },
 });
+const ftpSshSchema = new Schema({
+  protocol: { type: String, required: false },
+  host: { type: String, required: true },
+  login: { type: String, required: false },
+  password: { type: String, required: false },
+  port: { type: Number, required: false },
+});
 
 const ProjectSchema = new Schema({
   domain: { type: String, required: true },
@@ -20,6 +27,7 @@ const ProjectSchema = new Schema({
   },
   hosting: { type: Schema.Types.ObjectId, ref: "Hosting", required: true },
   dns: { type: dnsSchema, required: false },
+  ftpSsh: { type: ftpSshSchema, required: false },
   github: { type: CredentialsSchema, required: false },
   wpAdmin: { type: CredentialsSchema, required: false },
   registerDate:{ type: String, required: false },

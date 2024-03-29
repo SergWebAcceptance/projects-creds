@@ -85,6 +85,13 @@ function ProjectForm({ projectData, editable = true }) {
             login: values.dnsLogin,
             password: values.dnsPassword,
           },
+          ftpSsh: {
+            protocol: values.ftpSshProtocol,
+            host: values.ftpSshHost,
+            login: values.ftpSshLogin,
+            password: values.ftpSshPassword,
+            port: values.ftpSshPort,
+          },
           github: {
             login: values.githubLogin,
             password: values.githubPassword,
@@ -107,6 +114,13 @@ function ProjectForm({ projectData, editable = true }) {
             name: values.dnsName,
             login: values.dnsLogin,
             password: values.dnsPassword,
+          },
+          ftpSsh: {
+            protocol: values.ftpSshProtocol,
+            host: values.ftpSshHost,
+            login: values.ftpSshLogin,
+            password: values.ftpSshPassword,
+            port: values.ftpSshPort,
           },
           github: {
             login: values.githubLogin,
@@ -167,6 +181,12 @@ function ProjectForm({ projectData, editable = true }) {
         expiredDate:
           projectData && projectData.expiredDate ? projectData.expiredDate : "",
         projectsCategory: projectData ? projectData.projectsCategory._id : "",
+        ftpSshProtocol: projectData && projectData.ftpSsh ? projectData.ftpSsh.protocol : "",
+        ftpSshHost: projectData && projectData.ftpSsh ? projectData.ftpSsh.host : "",
+        ftpSshLogin: projectData && projectData.ftpSsh ? projectData.ftpSsh.login : "",
+        ftpSshPassword:
+          projectData && projectData.ftpSsh ? projectData.ftpSsh.password : "",
+        ftpSshPort: projectData && projectData.ftpSsh ? projectData.ftpSsh.port : "",
       }}
       onSubmit={handleSubmit}
     >
@@ -451,6 +471,51 @@ function ProjectForm({ projectData, editable = true }) {
                 type="text"
                 name="dnsPassword"
                 placeholder="dnsPassword"
+                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+              />
+            </div>
+          </div>
+
+          <div
+            className={`space-y-2 ${
+              projectData ? (projectData.dns.login ? "" : "hidden") : ""
+            }`}
+          >
+            <h2>FTP/SSH Account</h2>
+            <div className="flex gap-4">
+            <Field
+                disabled={!editable}
+                type="text"
+                name="ftpSshProtocol"
+                placeholder="ftpSshProtocol"
+                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+              />
+              <Field
+                disabled={!editable}
+                type="text"
+                name="ftpSshHost"
+                placeholder="ftpSshHost"
+                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+              />
+              <Field
+                disabled={!editable}
+                type="text"
+                name="ftpSshLogin"
+                placeholder="ftpSshLogin"
+                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+              />
+              <Field
+                disabled={!editable}
+                type="text"
+                name="ftpSshPassword"
+                placeholder="ftpSshPassword"
+                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+              />
+              <Field
+                disabled={!editable}
+                type="text"
+                name="ftpSshPort"
+                placeholder="ftpSshPort"
                 className="w-full rounded-lg border-gray-200 p-3 text-sm border"
               />
             </div>
