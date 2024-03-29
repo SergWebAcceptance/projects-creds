@@ -155,6 +155,8 @@ function ProjectForm({ projectData, editable = true }) {
         dnsLogin: projectData && projectData.dns ? projectData.dns.login : "",
         dnsPassword:
           projectData && projectData.dns ? projectData.dns.password : "",
+        dnsName:
+          projectData && projectData.dns ? projectData.dns.name : "",
         githubLogin:
           projectData && projectData.github ? projectData.github.login : "",
         githubPassword:
