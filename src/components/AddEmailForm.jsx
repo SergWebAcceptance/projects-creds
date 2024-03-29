@@ -33,7 +33,7 @@ function AddEmailForm({ projectData, editable = true }) {
           email: values.email,
           password: values.password,
           aliases: values.aliases,
-          emailCategory: values.projectsCategory,
+          emailCategory: values.emailCategory,
         });
       } else {
         await axios.patch("/api/emails", {
