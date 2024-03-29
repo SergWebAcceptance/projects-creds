@@ -14,8 +14,8 @@ function Header() {
             <ul className="flex items-center gap-6 text-sm">
               <li>
                 <Link
-                  className={`text-gray-500 pb-1 border-b-2 border-white transition hover:text-gray-500/75 ${
-                    projectsCategory == "Anywires" ? "border-teal-600" : ""
+                  className={`text-gray-500 pb-1 border-b-2  transition hover:text-gray-500/75 ${
+                    projectsCategory == "Anywires" ? "border-teal-600" : "border-white"
                   }`}
                   onClick={() => setProjectsCategory("Anywires")}
                   href={"/"}
@@ -26,8 +26,8 @@ function Header() {
               </li>
               <li>
                 <Link
-                  className={`text-gray-500 pb-1 border-b-2 border-white transition hover:text-gray-500/75 ${
-                    projectsCategory == "TradeProof" ? "border-teal-600" : ""
+                  className={`text-gray-500 pb-1 border-b-2 transition hover:text-gray-500/75 ${
+                    projectsCategory == "TradeProof" ? "border-teal-600" : "border-white"
                   }`}
                   onClick={() => setProjectsCategory("TradeProof")}
                   href={"/"}
