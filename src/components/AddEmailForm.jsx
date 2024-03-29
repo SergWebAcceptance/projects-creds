@@ -5,10 +5,13 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
+import { Copy, CopyCheck } from "lucide-react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 function AddEmailForm({ projectData, editable = true }) {
   const router = useRouter();
   const [categories, setCategories] = useState([]);
+  const [copied, setCopied] = useState(null);
 
   useEffect(() => {
     console.log(projectData);
@@ -52,12 +55,21 @@ function AddEmailForm({ projectData, editable = true }) {
       } else {
         window.location.reload();
       }
-      
     } catch (error) {
       console.error("Failed to submit the form", error);
       setSubmitting(false);
     }
   };
+
+  const CopyButton = ({ copyValue }) => (
+    <CopyToClipboard text={copyValue} onCopy={() => setCopied(copyValue)}>
+      {copied === copyValue ? (
+        <CopyCheck  className="cursor-pointer opacity-40 absolute top-1 right-4 w-5" />
+      ) : (
+        <Copy className="cursor-pointer opacity-40 absolute top-1 right-4 w-5" />
+      )}
+    </CopyToClipboard>
+  );
 
   const findOptionById = (options, id) =>
     options.find((option) => option.value === id);
@@ -75,7 +87,7 @@ function AddEmailForm({ projectData, editable = true }) {
       {({ isSubmitting, setFieldValue, values }) => (
         <Form className={`mt-6 mb-6 space-y-4 ${!editable && "disabled"}`}>
           <div className="domain-info flex gap-4">
-            <div className="w-full space-y-2">
+            <div className="w-full space-y-2 relative">
               <Field
                 type="text"
                 name="email"
@@ -83,8 +95,9 @@ function AddEmailForm({ projectData, editable = true }) {
                 className="w-full rounded-lg border-gray-200 p-3 text-sm border"
                 disabled={!editable}
               />
+              {!editable && <CopyButton copyValue={values.email} />}
             </div>
-            <div className="w-full space-y-2">
+            <div className="w-full space-y-2 relative">
               <Field
                 type="text"
                 name="password"
@@ -92,6 +105,7 @@ function AddEmailForm({ projectData, editable = true }) {
                 className="w-full rounded-lg border-gray-200 p-3 text-sm border"
                 disabled={!editable}
               />
+              {!editable && <CopyButton copyValue={values.password} />}
             </div>
           </div>
 

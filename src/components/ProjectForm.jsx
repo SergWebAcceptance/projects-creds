@@ -5,6 +5,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Select from "react-select";
+import { Copy, CopyCheck } from "lucide-react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 function ProjectForm({ projectData, editable = true }) {
   const [categories, setCategories] = useState([]);
@@ -13,6 +15,7 @@ function ProjectForm({ projectData, editable = true }) {
   const [isNewRegistrar, setIsNewRegistrar] = useState(false);
   const [isNewHosting, setIsNewHosting] = useState(false);
   const router = useRouter();
+  const [copied, setCopied] = useState(null);
 
   useEffect(() => {
     console.log(projectData);
@@ -153,6 +156,16 @@ function ProjectForm({ projectData, editable = true }) {
     }
   };
 
+  const CopyButton = ({ copyValue }) => (
+    <CopyToClipboard text={copyValue} onCopy={() => setCopied(copyValue)}>
+      {copied === copyValue ? (
+        <CopyCheck className="cursor-pointer opacity-40 absolute top-2.5 right-3 w-5" />
+      ) : (
+        <Copy className="cursor-pointer opacity-40 absolute top-2.5 right-3 w-5" />
+      )}
+    </CopyToClipboard>
+  );
+
   const findOptionById = (options, id) =>
     options.find((option) => option.value === id);
 
@@ -215,33 +228,42 @@ function ProjectForm({ projectData, editable = true }) {
           <div className="domain-info flex gap-4">
             <div className="w-full space-y-2">
               <h2>Project domain</h2>
-              <Field
-                type="text"
-                name="domain"
-                placeholder="Domain"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                disabled={!editable}
-              />
+              <div className="relative">
+                <Field
+                  type="text"
+                  name="domain"
+                  placeholder="Domain"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  disabled={!editable}
+                />
+                {!editable && <CopyButton copyValue={values.domain} />}
+              </div>
             </div>
             <div className="w-full space-y-2">
               <h2>Register Date</h2>
-              <Field
-                type="date"
-                name="registerDate"
-                placeholder="Register Date"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                disabled={!editable}
-              />
+              <div className="relative">
+                <Field
+                  type="date"
+                  name="registerDate"
+                  placeholder="Register Date"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  disabled={!editable}
+                />
+                {!editable && <CopyButton copyValue={values.registerDate} />}
+              </div>
             </div>
             <div className="w-full space-y-2">
               <h2>Expired Date</h2>
-              <Field
-                type="date"
-                name="expiredDate"
-                placeholder="Expired Date"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                disabled={!editable}
-              />
+              <div className="relative">
+                <Field
+                  type="date"
+                  name="expiredDate"
+                  placeholder="Expired Date"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  disabled={!editable}
+                />
+                {!editable && <CopyButton copyValue={values.expiredDate} />}
+              </div>
             </div>
           </div>
 
@@ -282,42 +304,75 @@ function ProjectForm({ projectData, editable = true }) {
                   />
                 ) : (
                   <div className="flex gap-4">
-                    <Field
-                      value={
-                        projectData
-                          ? `${projectData.domainRegistrar.name} `
-                          : ""
-                      }
-                      disabled={!editable}
-                      type="text"
-                      name="hostingPlaceholder"
-                      placeholder="hosting"
-                      className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                    />
-                    <Field
-                      value={
-                        projectData
-                          ? `${projectData.domainRegistrar.login}`
-                          : ""
-                      }
-                      disabled={!editable}
-                      type="text"
-                      name="hostingPlaceholder"
-                      placeholder="hosting"
-                      className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                    />
-                    <Field
-                      value={
-                        projectData
-                          ? `${projectData.domainRegistrar.password}`
-                          : ""
-                      }
-                      disabled={!editable}
-                      type="text"
-                      name="hostingPlaceholder"
-                      placeholder="hosting"
-                      className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                    />
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData
+                            ? `${projectData.domainRegistrar.name} `
+                            : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="domainRegistrarNamePlaceholder"
+                        placeholder="hosting"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData
+                              ? `${projectData.domainRegistrar.name} `
+                              : ""
+                          }
+                        />
+                      )}
+                    </div>
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData
+                            ? `${projectData.domainRegistrar.login}`
+                            : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="domainRegistrarLoginPlaceholder"
+                        placeholder="hosting"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData
+                              ? `${projectData.domainRegistrar.login}`
+                              : ""
+                          }
+                        />
+                      )}
+                    </div>
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData
+                            ? `${projectData.domainRegistrar.password}`
+                            : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="domainRegistrarPasswordPlaceholder"
+                        placeholder="hosting"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData
+                              ? `${projectData.domainRegistrar.password}`
+                              : ""
+                          }
+                        />
+                      )}
+                    </div>
                   </div>
                 )}
               </>
@@ -380,32 +435,61 @@ function ProjectForm({ projectData, editable = true }) {
                   />
                 ) : (
                   <div className="flex gap-4">
-                    <Field
-                      value={projectData ? `${projectData.hosting.name} ` : ""}
-                      disabled={!editable}
-                      type="text"
-                      name="hostingPlaceholder"
-                      placeholder="hosting"
-                      className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                    />
-                    <Field
-                      value={projectData ? `${projectData.hosting.login}` : ""}
-                      disabled={!editable}
-                      type="text"
-                      name="hostingPlaceholder"
-                      placeholder="hosting"
-                      className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                    />
-                    <Field
-                      value={
-                        projectData ? `${projectData.hosting.password}` : ""
-                      }
-                      disabled={!editable}
-                      type="text"
-                      name="hostingPlaceholder"
-                      placeholder="hosting"
-                      className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                    />
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData ? `${projectData.hosting.name} ` : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="hostingNamePlaceholder"
+                        placeholder="hosting"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton copyValue={
+                          projectData ? `${projectData.hosting.name} ` : ""
+                        } />
+                      )}
+                    </div>
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData ? `${projectData.hosting.login}` : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="hostingLoginPlaceholder"
+                        placeholder="hosting"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData ? `${projectData.hosting.login}` : ""
+                          }
+                        />
+                      )}
+                    </div>
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData ? `${projectData.hosting.password}` : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="hostingPasswordPlaceholder"
+                        placeholder="hosting"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData ? `${projectData.hosting.password}` : ""
+                          }
+                        />
+                      )}
+                    </div>
                   </div>
                 )}
               </>
@@ -433,49 +517,71 @@ function ProjectForm({ projectData, editable = true }) {
 
           <div
             className={`space-y-2 mt-6 pt-4 border-t-2 border-gray-200 ${
-              projectData && !editable ? (projectData.wpAdmin.login ? "" : "hidden") : ""
+              projectData && !editable
+                ? projectData.wpAdmin.login
+                  ? ""
+                  : "hidden"
+                : ""
             }`}
           >
             <h2>Wordpress Account</h2>
             <div className="flex gap-4">
-              <Field
-                disabled={!editable}
-                type="text"
-                name="wpAdminLogin"
-                placeholder="wpAdminLogin"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-              />
-              <Field
-                disabled={!editable}
-                type="text"
-                name="wpAdminPassword"
-                placeholder="wpAdminPassword"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-              />
+              <div className="relative w-full">
+                <Field
+                  disabled={!editable}
+                  type="text"
+                  name="wpAdminLogin"
+                  placeholder="wpAdminLogin"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                />
+                {!editable && <CopyButton copyValue={values.wpAdminLogin} />}
+              </div>
+              <div className="relative w-full">
+                <Field
+                  disabled={!editable}
+                  type="text"
+                  name="wpAdminPassword"
+                  placeholder="wpAdminPassword"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                />
+                {!editable && <CopyButton copyValue={values.wpAdminPassword} />}
+              </div>
             </div>
           </div>
 
           <div
             className={`space-y-2 mt-6 pt-4 border-t-2 border-gray-200 ${
-              projectData && !editable ? (projectData.testAccess ? "" : "hidden") : ""
+              projectData && !editable
+                ? projectData.testAccess
+                  ? ""
+                  : "hidden"
+                : ""
             }`}
           >
             <h2>Test Wordpress Account</h2>
             <div className="flex gap-4">
-              <Field
-                disabled={!editable}
-                type="text"
-                name="testAccessLogin"
-                placeholder="wtestAccessLogin"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-              />
-              <Field
-                disabled={!editable}
-                type="text"
-                name="testAccessPassword"
-                placeholder="testAccessPassword"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-              />
+              <div className="relative w-full">
+                <Field
+                  disabled={!editable}
+                  type="text"
+                  name="testAccessLogin"
+                  placeholder="wtestAccessLogin"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                />
+                {!editable && <CopyButton copyValue={values.testAccessLogin} />}
+              </div>
+              <div className="relative w-full">
+                <Field
+                  disabled={!editable}
+                  type="text"
+                  name="testAccessPassword"
+                  placeholder="testAccessPassword"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                />
+                {!editable && (
+                  <CopyButton copyValue={values.testAccessPassword} />
+                )}
+              </div>
             </div>
           </div>
 
@@ -486,72 +592,100 @@ function ProjectForm({ projectData, editable = true }) {
           >
             <h2>DNS Account</h2>
             <div className="flex gap-4">
-              <Field
-                disabled={!editable}
-                type="text"
-                name="dnsName"
-                placeholder="dnsName"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-              />
-              <Field
-                disabled={!editable}
-                type="text"
-                name="dnsLogin"
-                placeholder="dnsLogin"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-              />
-              <Field
-                disabled={!editable}
-                type="text"
-                name="dnsPassword"
-                placeholder="dnsPassword"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-              />
+              <div className="relative w-full">
+                <Field
+                  disabled={!editable}
+                  type="text"
+                  name="dnsName"
+                  placeholder="dnsName"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                />
+                {!editable && <CopyButton copyValue={values.dnsName} />}
+              </div>
+              <div className="relative w-full">
+                <Field
+                  disabled={!editable}
+                  type="text"
+                  name="dnsLogin"
+                  placeholder="dnsLogin"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                />
+                {!editable && <CopyButton copyValue={values.dnsLogin} />}
+              </div>
+              <div className="relative w-full">
+                <Field
+                  disabled={!editable}
+                  type="text"
+                  name="dnsPassword"
+                  placeholder="dnsPassword"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                />
+                {!editable && <CopyButton copyValue={values.dnsPassword} />}
+              </div>
             </div>
           </div>
 
           <div
             className={`space-y-2 mt-6 pt-4 border-t-2 border-gray-200 ${
-              projectData && !editable ? (projectData.ftpSsh ? "" : "hidden") : ""
+              projectData && !editable
+                ? projectData.ftpSsh
+                  ? ""
+                  : "hidden"
+                : ""
             }`}
           >
             <h2>FTP/SSH Account</h2>
             <div className="flex gap-4">
-              <Field
-                disabled={!editable}
-                type="text"
-                name="ftpSshProtocol"
-                placeholder="ftpSshProtocol"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-              />
-              <Field
-                disabled={!editable}
-                type="text"
-                name="ftpSshHost"
-                placeholder="ftpSshHost"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-              />
-              <Field
-                disabled={!editable}
-                type="text"
-                name="ftpSshLogin"
-                placeholder="ftpSshLogin"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-              />
-              <Field
-                disabled={!editable}
-                type="text"
-                name="ftpSshPassword"
-                placeholder="ftpSshPassword"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-              />
-              <Field
-                disabled={!editable}
-                type="text"
-                name="ftpSshPort"
-                placeholder="ftpSshPort"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-              />
+              <div className="relative w-full">
+                <Field
+                  disabled={!editable}
+                  type="text"
+                  name="ftpSshProtocol"
+                  placeholder="ftpSshProtocol"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                />
+                {!editable && <CopyButton copyValue={values.ftpSshProtocol} />}
+              </div>
+              <div className="relative w-full">
+                <Field
+                  disabled={!editable}
+                  type="text"
+                  name="ftpSshHost"
+                  placeholder="ftpSshHost"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                />
+                {!editable && <CopyButton copyValue={values.ftpSshHost} />}
+              </div>
+              <div className="relative w-full">
+                <Field
+                  disabled={!editable}
+                  type="text"
+                  name="ftpSshLogin"
+                  placeholder="ftpSshLogin"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                />
+                {!editable && <CopyButton copyValue={values.ftpSshLogin} />}
+              </div>
+              <div className="relative w-full">
+                <Field
+                  disabled={!editable}
+                  type="text"
+                  name="ftpSshPassword"
+                  placeholder="ftpSshPassword"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                />
+                {!editable && <CopyButton copyValue={values.ftpSshPassword} />}
+              </div>
+              <div className="relative w-full">
+                <Field
+                  disabled={!editable}
+                  type="text"
+                  name="ftpSshPort"
+                  placeholder="ftpSshPort"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                />
+                {!editable && <CopyButton copyValue={values.ftpSshPort} />}
+              </div>
             </div>
           </div>
 
@@ -562,20 +696,26 @@ function ProjectForm({ projectData, editable = true }) {
           >
             <h2>GitHub Account</h2>
             <div className="flex gap-4">
-              <Field
-                disabled={!editable}
-                type="text"
-                name="githubLogin"
-                placeholder="githubLogin"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-              />
-              <Field
-                disabled={!editable}
-                type="text"
-                name="githubPassword"
-                placeholder="githubPassword"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-              />
+              <div className="relative w-full">
+                <Field
+                  disabled={!editable}
+                  type="text"
+                  name="githubLogin"
+                  placeholder="githubLogin"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                />
+                {!editable && <CopyButton copyValue={values.githubLogin} />}
+              </div>
+              <div className="relative w-full">
+                <Field
+                  disabled={!editable}
+                  type="text"
+                  name="githubPassword"
+                  placeholder="githubPassword"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                />
+                {!editable && <CopyButton copyValue={values.githubPassword} />}
+              </div>
             </div>
           </div>
 
