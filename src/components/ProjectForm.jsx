@@ -1,0 +1,475 @@
+"use client";
+
+import { Formik, Form, Field } from "formik";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import Select from "react-select";
+
+function ProjectForm({ projectData, editable = true }) {
+  const [categories, setCategories] = useState([]);
+  const [registrars, setRegistrars] = useState([]);
+  const [hostings, setHostings] = useState([]);
+  const [isNewRegistrar, setIsNewRegistrar] = useState(false);
+  const [isNewHosting, setIsNewHosting] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    console.log(projectData);
+
+    const fetchCategories = async () => {
+      const response = await axios.get("/api/categories");
+      console.log(response.data);
+      const adaptedCategories = response.data.map((category) => ({
+        value: category._id,
+        label: category.name,
+      }));
+      setCategories(adaptedCategories);
+    };
+
+    const fetchRegistrars = async () => {
+      const response = await axios.get("/api/registrars");
+      const adaptedRegistrars = response.data.map((registrar) => ({
+        value: registrar._id,
+        label: `${registrar.name} - ${registrar.login}`,
+      }));
+      setRegistrars(adaptedRegistrars);
+    };
+
+    const fetchHostings = async () => {
+      const response = await axios.get("/api/hostings");
+      const adaptedHostings = response.data.map((hosting) => ({
+        value: hosting._id,
+        label: `${hosting.name} - ${hosting.login}`,
+      }));
+      setHostings(adaptedHostings);
+    };
+
+    fetchRegistrars();
+    fetchHostings();
+    fetchCategories();
+  }, []);
+
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    try {
+      let registrarId = values.domainRegistrar;
+      let hostingId = values.hosting;
+
+      // Якщо додається новий domainRegistrar
+      if (isNewRegistrar && values.newDomainRegistrar) {
+        const registrarResponse = await axios.post("/api/registrars", {
+          name: values.newDomainRegistrar,
+          login: values.registrarLogin,
+          password: values.registrarPassword,
+        });
+        registrarId = registrarResponse.data._id;
+      }
+
+      // Якщо додається новий hosting
+      if (isNewHosting && values.newHosting) {
+        const hostingResponse = await axios.post("/api/hostings", {
+          name: values.newHosting,
+          login: values.hostingLogin,
+          password: values.hostingPassword,
+        });
+        hostingId = hostingResponse.data._id;
+      }
+
+      if (!projectData) {
+        await axios.post("/api/projects", {
+          domain: values.domain,
+          domainRegistrar: registrarId,
+          hosting: hostingId,
+          dns: {
+            name: values.dnsName,
+            login: values.dnsLogin,
+            password: values.dnsPassword,
+          },
+          github: {
+            login: values.githubLogin,
+            password: values.githubPassword,
+          },
+          wpAdmin: {
+            login: values.wpAdminLogin,
+            password: values.wpAdminPassword,
+          },
+          registerDate: values.registerDate,
+          expiredDate: values.expiredDate,
+          projectsCategory: values.projectsCategory,
+        });
+      } else {
+        await axios.patch("/api/projects", {
+          projectId: projectData._id,
+          domain: values.domain,
+          domainRegistrar: registrarId,
+          hosting: hostingId,
+          dns: {
+            name: values.dnsName,
+            login: values.dnsLogin,
+            password: values.dnsPassword,
+          },
+          github: {
+            login: values.githubLogin,
+            password: values.githubPassword,
+          },
+          wpAdmin: {
+            login: values.wpAdminLogin,
+            password: values.wpAdminPassword,
+          },
+          registerDate: values.registerDate,
+          expiredDate: values.expiredDate,
+          projectsCategory: values.projectsCategory,
+        });
+      }
+
+      setSubmitting(false);
+      resetForm();
+      router.push("/");
+    } catch (error) {
+      console.error("Failed to submit the form", error);
+      setSubmitting(false);
+    }
+  };
+
+  const findOptionById = (options, id) =>
+    options.find((option) => option.value === id);
+
+  return (
+    <Formik
+      initialValues={{
+        domain: projectData ? projectData.domain : "",
+        domainRegistrar: projectData ? projectData.domainRegistrar._id : "",
+        newDomainRegistrar: "",
+        registrarLogin: "", // Для логіна нового domainRegistrar
+        registrarPassword: "", // Для пароля нового domainRegistrar
+        hosting: projectData ? projectData.hosting._id : "",
+        newHosting: "",
+        hostingLogin: "",
+        hostingPassword: "",
+        wpAdminLogin:
+          projectData && projectData.wpAdmin ? projectData.wpAdmin.login : "",
+        wpAdminPassword:
+          projectData && projectData.wpAdmin
+            ? projectData.wpAdmin.password
+            : "",
+        dnsLogin: projectData && projectData.dns ? projectData.dns.login : "",
+        dnsPassword:
+          projectData && projectData.dns ? projectData.dns.password : "",
+        githubLogin:
+          projectData && projectData.github ? projectData.github.login : "",
+        githubPassword:
+          projectData && projectData.github ? projectData.github.password : "",
+        registerDate:
+          projectData && projectData.registerDate
+            ? projectData.registerDate
+            : "",
+        expiredDate:
+          projectData && projectData.expiredDate ? projectData.expiredDate : "",
+        projectsCategory: projectData ? projectData.projectsCategory._id : "",
+      }}
+      onSubmit={handleSubmit}
+    >
+      {({ isSubmitting, setFieldValue, values }) => (
+        <Form className={`space-y-4 ${!editable && "disabled"}`}>
+          <div className="domain-info flex gap-4">
+            <div className="w-full space-y-2">
+              <h2>Project domain</h2>
+              <Field
+                type="text"
+                name="domain"
+                placeholder="Domain"
+                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                disabled={!editable}
+              />
+            </div>
+            <div className="w-full space-y-2">
+              <h2>Register Date</h2>
+              <Field
+                type="date"
+                name="registerDate"
+                placeholder="Register Date"
+                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                disabled={!editable}
+              />
+            </div>
+            <div className="w-full space-y-2">
+              <h2>Expired Date</h2>
+              <Field
+                type="date"
+                name="expiredDate"
+                placeholder="Expired Date"
+                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                disabled={!editable}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <h2>Domain register Account</h2>
+            {isNewRegistrar ? (
+              <>
+                <div className="flex gap-4">
+                  <Field
+                    name="newDomainRegistrar"
+                    placeholder="New Domain Registrar Name"
+                    as="input"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
+                  <Field
+                    name="registrarLogin"
+                    placeholder="Registrar Login"
+                    as="input"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
+                  <Field
+                    name="registrarPassword"
+                    placeholder="Registrar Password"
+                    as="input"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                {editable ? (
+                  <Select
+                    value={findOptionById(registrars, values.domainRegistrar)}
+                    options={registrars}
+                    onChange={(option) =>
+                      setFieldValue("domainRegistrar", option.value)
+                    }
+                  />
+                ) : (
+                  <Field
+                    value={
+                      projectData
+                        ? `${projectData.domainRegistrar.login} - ${projectData.domainRegistrar.login}`
+                        : ""
+                    }
+                    disabled={!editable}
+                    type="text"
+                    name="hostingPlaceholder"
+                    placeholder="hosting"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
+                )}
+              </>
+            )}
+
+            {editable && (
+              <div className="flex gap-3 items-center mt-1">
+                <label
+                  htmlFor="RegistrarAcceptConditions"
+                  className="relative h-4 w-8 cursor-pointer rounded-full bg-gray-300 transition [-webkit-tap-highlight-color:_transparent] has-[:checked]:bg-green-500"
+                >
+                  <input
+                    type="checkbox"
+                    id="RegistrarAcceptConditions"
+                    className="peer sr-only"
+                    checked={isNewRegistrar}
+                    onChange={() => setIsNewRegistrar(!isNewRegistrar)}
+                  />
+                  <span className="absolute inset-y-0 start-0 m-1 size-2 rounded-full bg-white transition-all peer-checked:start-4"></span>
+                </label>
+                Add New Domain Registrar
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <h2>Hosting Account</h2>
+            {isNewHosting ? (
+              <>
+                <div className="flex gap-4">
+                  <Field
+                    name="newHosting"
+                    placeholder="New Hosting Name"
+                    as="input"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
+                  <Field
+                    name="hostingLogin"
+                    placeholder="Hosting Login"
+                    as="input"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
+                  <Field
+                    name="hostingPassword"
+                    placeholder="Hosting Password"
+                    as="input"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                {editable ? (
+                  <Select
+                    value={findOptionById(hostings, values.hosting)}
+                    options={hostings}
+                    onChange={(option) =>
+                      setFieldValue("hosting", option.value)
+                    }
+                  />
+                ) : (
+                  <Field
+                    value={
+                      projectData
+                        ? `${projectData.hosting.login} - ${projectData.hosting.login}`
+                        : ""
+                    }
+                    disabled={!editable}
+                    type="text"
+                    name="hostingPlaceholder"
+                    placeholder="hosting"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
+                )}
+              </>
+            )}
+
+            {editable && (
+              <div className="flex gap-3 items-center mt-1">
+                <label
+                  htmlFor="HostingAcceptConditions"
+                  className="relative h-4 w-8 cursor-pointer rounded-full bg-gray-300 transition [-webkit-tap-highlight-color:_transparent] has-[:checked]:bg-green-500"
+                >
+                  <input
+                    type="checkbox"
+                    id="HostingAcceptConditions"
+                    className="peer sr-only"
+                    checked={isNewHosting}
+                    onChange={() => setIsNewHosting(!isNewHosting)}
+                  />
+                  <span className="absolute inset-y-0 start-0 m-1 size-2 rounded-full bg-white transition-all peer-checked:start-4"></span>
+                </label>
+                Add New Hosting
+              </div>
+            )}
+          </div>
+
+          <div
+            className={`space-y-2 ${
+              projectData ? (projectData.wpAdmin.login ? "" : "hidden") : ""
+            }`}
+          >
+            <h2>Wordpress Account</h2>
+            <div className="flex gap-4">
+              <Field
+                disabled={!editable}
+                type="text"
+                name="wpAdminLogin"
+                placeholder="wpAdminLogin"
+                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+              />
+              <Field
+                disabled={!editable}
+                type="text"
+                name="wpAdminPassword"
+                placeholder="wpAdminPassword"
+                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+              />
+            </div>
+          </div>
+
+          <div
+            className={`space-y-2 ${
+              projectData ? (projectData.dns.login ? "" : "hidden") : ""
+            }`}
+          >
+            <h2>DNS Account</h2>
+            <div className="flex gap-4">
+            <Field
+                disabled={!editable}
+                type="text"
+                name="dnsName"
+                placeholder="dnsName"
+                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+              />
+              <Field
+                disabled={!editable}
+                type="text"
+                name="dnsLogin"
+                placeholder="dnsLogin"
+                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+              />
+              <Field
+                disabled={!editable}
+                type="text"
+                name="dnsPassword"
+                placeholder="dnsPassword"
+                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+              />
+            </div>
+          </div>
+
+          <div
+            className={`space-y-2 ${
+              projectData ? (projectData.github.login ? "" : "hidden") : ""
+            }`}
+          >
+            <h2>GitHub Account</h2>
+            <div className="flex gap-4">
+              <Field
+                disabled={!editable}
+                type="text"
+                name="githubLogin"
+                placeholder="githubLogin"
+                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+              />
+              <Field
+                disabled={!editable}
+                type="text"
+                name="githubPassword"
+                placeholder="githubPassword"
+                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+              />
+            </div>
+          </div>
+
+          <div
+            className={`space-y-2 ${
+              projectData ? (projectData.github.login ? "" : "hidden") : ""
+            }`}
+          >
+            <h2>Project category</h2>
+            <>
+              {editable ? (
+                <Select
+                  value={findOptionById(categories, values.projectsCategory)}
+                  options={categories}
+                  onChange={(option) =>
+                    setFieldValue("projectsCategory", option.value)
+                  }
+                />
+              ) : (
+                <Field
+                  value={
+                    projectData ? `${projectData.projectsCategory.name}` : ""
+                  }
+                  disabled={!editable}
+                  type="text"
+                  name="hostingPlaceholder"
+                  placeholder="hosting"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                />
+              )}
+            </>
+          </div>
+
+          {editable && (
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="inline-block w-full rounded-lg bg-black px-5 py-3 font-medium text-white sm:w-auto"
+            >
+              Submit
+            </button>
+          )}
+        </Form>
+      )}
+    </Formik>
+  );
+}
+
+export default ProjectForm;
