@@ -73,7 +73,7 @@ function AddEmailForm({ projectData, editable = true }) {
       onSubmit={handleSubmit}
     >
       {({ isSubmitting, setFieldValue, values }) => (
-        <Form className={`space-y-4 ${!editable && "disabled"}`}>
+        <Form className={`mt-6 mb-6 space-y-4 ${!editable && "disabled"}`}>
           <div className="domain-info flex gap-4">
             <div className="w-full space-y-2">
               <Field

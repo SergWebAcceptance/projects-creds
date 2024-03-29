@@ -211,7 +211,7 @@ function ProjectForm({ projectData, editable = true }) {
       onSubmit={handleSubmit}
     >
       {({ isSubmitting, setFieldValue, values }) => (
-        <Form className={`space-y-4 ${!editable && "disabled"}`}>
+        <Form className={`mt-6 mb-6 ${!editable && "disabled"}`}>
           <div className="domain-info flex gap-4">
             <div className="w-full space-y-2">
               <h2>Project domain</h2>
@@ -245,7 +245,7 @@ function ProjectForm({ projectData, editable = true }) {
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 mt-6 pt-4 border-t-2 border-gray-200">
             <h2>Domain register Account</h2>
             {isNewRegistrar ? (
               <>
@@ -343,7 +343,7 @@ function ProjectForm({ projectData, editable = true }) {
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 mt-6 pt-4 border-t-2 border-gray-200">
             <h2>Hosting Account</h2>
             {isNewHosting ? (
               <>
@@ -432,7 +432,7 @@ function ProjectForm({ projectData, editable = true }) {
           </div>
 
           <div
-            className={`space-y-2 ${
+            className={`space-y-2 mt-6 pt-4 border-t-2 border-gray-200 ${
               projectData && !editable ? (projectData.wpAdmin.login ? "" : "hidden") : ""
             }`}
           >
@@ -456,7 +456,7 @@ function ProjectForm({ projectData, editable = true }) {
           </div>
 
           <div
-            className={`space-y-2 ${
+            className={`space-y-2 mt-6 pt-4 border-t-2 border-gray-200 ${
               projectData && !editable ? (projectData.testAccess ? "" : "hidden") : ""
             }`}
           >
@@ -480,7 +480,7 @@ function ProjectForm({ projectData, editable = true }) {
           </div>
 
           <div
-            className={`space-y-2 ${
+            className={`space-y-2 mt-6 pt-4 border-t-2 border-gray-200 ${
               projectData && !editable ? (projectData.dns ? "" : "hidden") : ""
             }`}
           >
@@ -511,7 +511,7 @@ function ProjectForm({ projectData, editable = true }) {
           </div>
 
           <div
-            className={`space-y-2 ${
+            className={`space-y-2 mt-6 pt-4 border-t-2 border-gray-200 ${
               projectData && !editable ? (projectData.ftpSsh ? "" : "hidden") : ""
             }`}
           >
@@ -556,7 +556,7 @@ function ProjectForm({ projectData, editable = true }) {
           </div>
 
           <div
-            className={`space-y-2 ${
+            className={`space-y-2 mt-6 pt-4 border-t-2 border-gray-200 ${
               projectData ? (projectData.github.login ? "" : "hidden") : ""
             }`}
           >
@@ -580,7 +580,7 @@ function ProjectForm({ projectData, editable = true }) {
           </div>
 
           <div
-            className={`space-y-2 ${
+            className={`space-y-2 mt-6 pt-4 border-t-2 border-gray-200 ${
               projectData ? (projectData.github.login ? "" : "hidden") : ""
             }`}
           >
@@ -613,7 +613,7 @@ function ProjectForm({ projectData, editable = true }) {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-block w-full rounded-lg bg-black px-5 py-3 font-medium text-white sm:w-auto"
+              className="inline-block w-full rounded-lg bg-black mt-8 px-5 py-3 font-medium text-white sm:w-auto"
             >
               Submit
             </button>

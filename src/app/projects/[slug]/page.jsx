@@ -33,7 +33,7 @@ function SingleProject({ params: { slug } }) {
           {!editableForm ? (
             <button
               onClick={() => handleEditable()}
-              className="mt-4 inline-block w-full rounded-lg bg-black px-5 py-3 font-medium text-white sm:w-auto"
+              className="inline-block w-full rounded-lg bg-black px-5 py-3 font-medium text-white sm:w-auto"
             >
               Edit
             </button>
