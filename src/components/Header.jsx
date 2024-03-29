@@ -19,6 +19,7 @@ function Header() {
                   }`}
                   onClick={() => setProjectsCategory("Anywires")}
                   href={"/"}
+                  data-category={projectsCategory}
                 >
                   Anywires
                 </Link>
@@ -30,6 +31,7 @@ function Header() {
                   }`}
                   onClick={() => setProjectsCategory("TradeProof")}
                   href={"/"}
+                  data-category={projectsCategory}
                 >
                   TradeProf
                 </Link>
