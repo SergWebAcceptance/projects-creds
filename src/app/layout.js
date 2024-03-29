@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
+import { ProjectsProvider } from "@/contexts/ProjectsContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,10 +14,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Header />
-        <main className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
-          {children}
-        </main>
+        <ProjectsProvider>
+          <Header />
+          <main className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
+            {children}
+          </main>
+        </ProjectsProvider>
       </body>
     </html>
   );

@@ -2,23 +2,25 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
+import { useProjects } from "@/contexts/ProjectsContext";
+import { Eye, Trash2 } from "lucide-react";
 
-function ProjectsList({category}) {
+function ProjectsList() {
+  const { projectsCategory, setProjectsCategory } = useProjects();
   const [projects, setProjects] = useState([]);
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get(`/api/projects?category=${category}`);
+        const response = await axios.get(`/api/projects?category=${projectsCategory}`);
         setProjects(response.data.projects);
         console.log(response.data);
       } catch (error) {
         console.error("Could not fetch projects", error);
-        // Тут можна додати обробку помилок
       }
     };
 
     fetchProjects();
-  }, []);
+  }, [projectsCategory]);
 
   const handleRemove = async (id) => {
     try {
@@ -43,21 +45,21 @@ function ProjectsList({category}) {
             {projects.map((project) => (
               <div
                 key={project._id}
-                className="projectRow flex items-center px-4 py-2 rounded my-4 bg-slate-100 justify-between shadow-md"
+                className="projectRow flex items-center px-4 py-2 rounded mb-4 bg-slate-100 justify-between shadow-md"
               >
                 <span>{project.domain}</span>
                 <div className="flex gap-2">
                   <Link
-                    className="block rounded-md bg-teal-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-teal-700"
+                    className="flex gap-2 items-center rounded-md bg-teal-600 px-2 py-2 text-sm font-medium text-white transition hover:bg-teal-700"
                     href={`/projects/${project._id}`}
                   >
-                    View
+                    <Eye/>
                   </Link>
                   <button
-                    className="block rounded-md bg-red-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-red-700"
+                    className="flex gap-2 items-center rounded-md bg-red-600 px-2 py-2 text-sm font-medium text-white transition hover:bg-red-700"
                     onClick={() => handleRemove(project._id)}
                   >
-                    Remove
+                    <Trash2/>
                   </button>
                 </div>
               </div>
@@ -150,7 +152,7 @@ function ProjectsList({category}) {
           </table>
         </div>
       ) : (
-        <p>Loading...</p>
+        <p>...</p>
       )}
     </div>
   );

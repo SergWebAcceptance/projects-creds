@@ -9,7 +9,9 @@
 }*/
 
 
-
+header a{
+  cursor: pointer;
+}
 
 body {
   color: rgb(var(--foreground-rgb));
