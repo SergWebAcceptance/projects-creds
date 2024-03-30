@@ -40,7 +40,7 @@ function SingleProject({ params: { slug } }) {
           ) : (
             <button
               onClick={() => handleEditable()}
-              className="mt-4 inline-block w-full rounded-lg bg-red-600 px-5 py-3 font-medium text-white sm:w-auto"
+              className="inline-block w-full rounded-lg bg-red-600 px-5 py-3 font-medium text-white sm:w-auto"
             >
               Cancel edit
             </button>
