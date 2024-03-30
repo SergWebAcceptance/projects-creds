@@ -7,11 +7,11 @@ export default function Home() {
 
   return (
     <main>
-      <div className="flex gap-7 w-full mt-5">
-        <div className="w-1/4">
+      <div className="flex flex-col sm:flex-row gap-7 w-full mt-5">
+        <div className="w-full sm:w-1/4">
           <SidebarNavigation />
         </div>
-        <div className="w-3/4">
+        <div className="w-full sm:w-3/4">
           <ProjectsList />
         </div>
       </div>

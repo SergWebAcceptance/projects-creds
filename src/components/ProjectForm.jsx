@@ -225,7 +225,7 @@ function ProjectForm({ projectData, editable = true }) {
     >
       {({ isSubmitting, setFieldValue, values }) => (
         <Form className={`mt-6 mb-6 ${!editable && "disabled"}`}>
-          <div className="domain-info flex gap-4">
+          <div className="domain-info flex flex-col sm:flex-row gap-4">
             <div className="w-full space-y-2">
               <h2>Project domain</h2>
               <div className="relative">
@@ -271,7 +271,7 @@ function ProjectForm({ projectData, editable = true }) {
             <h2>Domain register Account</h2>
             {isNewRegistrar ? (
               <>
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
                   <Field
                     name="newDomainRegistrar"
                     placeholder="New Domain Registrar Name"
@@ -303,7 +303,7 @@ function ProjectForm({ projectData, editable = true }) {
                     }
                   />
                 ) : (
-                  <div className="flex gap-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
                     <div className="relative w-full">
                       <Field
                         value={
@@ -379,7 +379,7 @@ function ProjectForm({ projectData, editable = true }) {
             )}
 
             {editable && (
-              <div className="flex gap-3 items-center mt-1">
+              <div className="flex  gap-3 items-center mt-1">
                 <label
                   htmlFor="RegistrarAcceptConditions"
                   className="relative h-4 w-8 cursor-pointer rounded-full bg-gray-300 transition [-webkit-tap-highlight-color:_transparent] has-[:checked]:bg-green-500"
@@ -402,7 +402,7 @@ function ProjectForm({ projectData, editable = true }) {
             <h2>Hosting Account</h2>
             {isNewHosting ? (
               <>
-                <div className="flex gap-4">
+                <div className="flex  flex-col sm:flex-rowgap-4">
                   <Field
                     name="newHosting"
                     placeholder="New Hosting Name"
@@ -434,7 +434,7 @@ function ProjectForm({ projectData, editable = true }) {
                     }
                   />
                 ) : (
-                  <div className="flex gap-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
                     <div className="relative w-full">
                       <Field
                         value={
@@ -525,7 +525,7 @@ function ProjectForm({ projectData, editable = true }) {
             }`}
           >
             <h2>Wordpress Account</h2>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <div className="relative w-full">
                 <Field
                   disabled={!editable}
@@ -559,7 +559,7 @@ function ProjectForm({ projectData, editable = true }) {
             }`}
           >
             <h2>Test Wordpress Account</h2>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <div className="relative w-full">
                 <Field
                   disabled={!editable}
@@ -591,7 +591,7 @@ function ProjectForm({ projectData, editable = true }) {
             }`}
           >
             <h2>DNS Account</h2>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <div className="relative w-full">
                 <Field
                   disabled={!editable}
@@ -635,7 +635,7 @@ function ProjectForm({ projectData, editable = true }) {
             }`}
           >
             <h2>FTP/SSH Account</h2>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <div className="relative w-full">
                 <Field
                   disabled={!editable}
@@ -695,7 +695,7 @@ function ProjectForm({ projectData, editable = true }) {
             }`}
           >
             <h2>GitHub Account</h2>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <div className="relative w-full">
                 <Field
                   disabled={!editable}

@@ -12,12 +12,12 @@ function Dashboard() {
   if (status === "authenticated") {
     if (session?.user?.role === "admin") {
       return (
-        <div className="flex gap-7 w-full mt-5">
-          <div className="w-1/4">
+        <div className="flex flex-col sm:flex-row gap-7 w-full mt-5">
+          <div className="w-full sm:w-1/4">
             <h2>Add new user</h2>
             <AllowedUserForm />
           </div>
-          <div className="w-3/4">
+          <div className="w-full sm:w-3/4">
             <UserList />
           </div>
         </div>

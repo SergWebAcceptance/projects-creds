@@ -21,9 +21,9 @@ function Header() {
 
     return (
       <header className="bg-white w-full">
-        <div className="mx-auto flex h-16 max-w-screen-xl items-center gap-8 px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-1 items-center justify-end md:justify-between">
-            <nav aria-label="Global" className="hidden md:block">
+        <div className="mx-auto flex h-16 max-w-screen-xl items-center gap-8 px-4  mt-4 sm:px-6 lg:px-8">
+          <div className="flex flex-1 flex-col sm:flex-row items-center justify-between gap-4">
+            <nav aria-label="Global" className="block">
               <ul className="flex items-center gap-6 text-sm">
                 {userRole !== "manager" && (
                   <li>
@@ -60,7 +60,7 @@ function Header() {
             </nav>
 
             <div className="flex items-center gap-4">
-              <div className="sm:flex sm:gap-4">
+              <div className="flex gap-2 sm:flex sm:gap-4">
                 {userRole !== "manager" && (
                   <>
                     <Link
