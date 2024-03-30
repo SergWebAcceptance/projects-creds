@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect, createContext, useContext } from "react";
 import { useSession } from "next-auth/react";
+import Preloader from "@/components/Preloader";
+import LoginForm from "@/components/LoginForm";
 
 const ProjectsContext = createContext();
 
@@ -19,11 +21,22 @@ export const ProjectsProvider = ({ children }) => {
     }
   }, [session?.user?.role, status]); // Тепер залежить безпосередньо від role та status
 
-  return (
-    <ProjectsContext.Provider value={{ projectsCategory, setProjectsCategory }}>
-      {children}
-    </ProjectsContext.Provider>
-  );
+  if (status === "loading") {
+    return <Preloader />;
+  }
+
+  if (status === "authenticated") {
+    return (
+      <ProjectsContext.Provider
+        value={{ projectsCategory, setProjectsCategory }}
+      >
+        {children}
+      </ProjectsContext.Provider>
+    );
+  }
+
+  return <LoginForm/>
+
 };
 
 export const useProjects = () => useContext(ProjectsContext);

@@ -19,7 +19,6 @@ function Header() {
     router.replace("/");
   };
 
-  if (status === "authenticated") {
     return (
       <header className="bg-white w-full">
         <div className="mx-auto flex h-16 max-w-screen-xl items-center gap-8 px-4 sm:px-6 lg:px-8">
@@ -97,7 +96,7 @@ function Header() {
         </div>
       </header>
     );
-  }
+  
 }
 
 export default Header;
