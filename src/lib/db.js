@@ -4,7 +4,7 @@ const connection = {};
 
 async function dbConnect() {
   if (connection.isConnected) {
-    return;
+    return mongoose.connections[0].getClient(); // Return the native client if already connected
   }
 
   try {
@@ -15,8 +15,9 @@ async function dbConnect() {
 
     connection.isConnected = db.connections[0].readyState;
     console.log("Connected to MongoDB");
+    return db.connection.getClient(); // Return the native client on successful connection
   } catch (error) {
-    console.error("Error onnecting to MongoDB:", error.message);
+    console.error("Error connecting to MongoDB:", error.message);
   }
 }
 
