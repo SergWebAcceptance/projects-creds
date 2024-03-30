@@ -4,25 +4,32 @@ import axios from "axios";
 import Link from "next/link";
 import { useProjects } from "@/contexts/ProjectsContext";
 import { Eye, Trash2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 function ProjectsList() {
+  const { data: session, status } = useSession();
   const { projectsCategory, setProjectsCategory } = useProjects();
   const [projects, setProjects] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await axios.get(
-          `/api/projects?category=${projectsCategory}&search=${searchQuery}`
-        );
-        setProjects(response.data.projects);
-        console.log(response.data);
-      } catch (error) {
-        console.error("Could not fetch projects", error);
-      }
-    };
 
-    fetchProjects();
+  useEffect(() => {
+    console.log("projectsCategory", projectsCategory);
+    if (
+      projectsCategory !== "DefaultCategory" &&
+      projectsCategory.trim() !== ""
+    ) {
+      const fetchProjects = async () => {
+        try {
+          const response = await axios.get(
+            `/api/projects?category=${projectsCategory}&search=${searchQuery}`
+          );
+          setProjects(response.data.projects);
+        } catch (error) {
+          console.error("Could not fetch projects", error);
+        }
+      };
+      fetchProjects();
+    }
   }, [projectsCategory, searchQuery]);
 
   const handleRemove = async (id) => {

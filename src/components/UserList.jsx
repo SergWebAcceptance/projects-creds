@@ -48,8 +48,8 @@ function UserList() {
               <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-left">
                 Role
               </th>
-              <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-left">
-                Actions
+              <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-right">
+                
               </th>
             </tr>
           </thead>
@@ -62,9 +62,9 @@ function UserList() {
                 <td className="whitespace-nowrap px-4 py-2 text-gray-700 text-left">
                   {user.role}
                 </td>
-                <td className="whitespace-nowrap px-4 py-2 text-gray-700 text-center">
+                <td className="whitespace-nowrap px-4 py-2 text-gray-700 text-right">
                   <button
-                    className="block rounded-md bg-red-600 px-2 py-2 text-sm font-medium text-white transition hover:bg-red-700"
+                    className="rounded-md bg-red-600 px-2 py-2 text-sm font-medium text-white transition hover:bg-red-700"
                     onClick={() => handleRemove(user._id)}
                   >
                     <Trash2 />

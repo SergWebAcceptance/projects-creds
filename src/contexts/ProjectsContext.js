@@ -1,20 +1,23 @@
-'use client';
-import React, { useState, useEffect, createContext, useContext } from 'react';
+"use client";
+import React, { useState, useEffect, createContext, useContext } from "react";
 import { useSession } from "next-auth/react";
 
 const ProjectsContext = createContext();
 
 export const ProjectsProvider = ({ children }) => {
-  const { data: session } = useSession();
-  const [projectsCategory, setProjectsCategory] = useState('');
-  const userRole = session ? session.user.role : '';
+  const { data: session, status } = useSession();
+  const [projectsCategory, setProjectsCategory] = useState("");
 
   useEffect(() => {
-    const defaultCategory =  userRole !== "manager" ? 'Anywires' : 'TradeProof';
-    setProjectsCategory(defaultCategory);
-  }, [session]);
-
-  
+    if (status === "authenticated" && session?.user?.role) {
+      const defaultCategory =
+        session.user.role !== "manager" ? "Anywires" : "TradeProof";
+      setProjectsCategory(defaultCategory);
+    } else if (status === "unauthenticated") {
+      // Встановіть значення за замовчуванням або обробіть відсутність аутентифікації
+      setProjectsCategory("DefaultCategory");
+    }
+  }, [session?.user?.role, status]); // Тепер залежить безпосередньо від role та status
 
   return (
     <ProjectsContext.Provider value={{ projectsCategory, setProjectsCategory }}>

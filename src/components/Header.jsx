@@ -16,7 +16,7 @@ function Header() {
   const logoutHandler = async () => {
     await signOut({ redirect: false });
     // Optionally, redirect the user after logging out
-    router.push("/");
+    router.replace("/");
   };
 
   if (status === "authenticated") {
