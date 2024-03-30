@@ -6,13 +6,13 @@ const CredentialsSchema = new Schema({
   password: { type: String, required: false },
 });
 const dnsSchema = new Schema({
-  name: { type: String, required: true },
+  name: { type: String, required: false },
   login: { type: String, required: false },
   password: { type: String, required: false },
 });
 const ftpSshSchema = new Schema({
   protocol: { type: String, required: false },
-  host: { type: String, required: true },
+  host: { type: String, required: false },
   login: { type: String, required: false },
   password: { type: String, required: false },
   port: { type: Number, required: false },
