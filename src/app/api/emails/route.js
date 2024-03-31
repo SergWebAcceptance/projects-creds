@@ -86,7 +86,10 @@ export async function GET(req, res) {
 
       // Додавання умови пошуку за доменом, якщо search присутній
       if (search) {
-        matchStage["email"] = { $regex: search, $options: "i" }; // Додавання нечутливого до регістру пошуку
+        matchStage["$or"] = [
+          { "email": { $regex: search, $options: "i" } }, // Додавання пошуку по полю email
+          { "aliases": { $regex: search, $options: "i" } } // Додавання пошуку по полю aliases
+        ];
       }
 
       const emails = await EmailAccounts.aggregate([
