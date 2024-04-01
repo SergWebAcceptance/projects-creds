@@ -9,21 +9,31 @@ function EmailsList() {
   const { projectsCategory, setProjectsCategory } = useProjects();
   const [emails, setEmails] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  useEffect(() => {
-    const fetchEmails = async () => {
-      try {
-        const response = await axios.get(
-          `/api/emails?category=${projectsCategory}&search=${searchQuery}`
-        );
-        setEmails(response.data.emails);
-        console.log(response.data);
-      } catch (error) {
-        console.error("Could not fetch projects", error);
-      }
-    };
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
-    fetchEmails();
-  }, [projectsCategory, searchQuery]);
+  useEffect(() => {
+    console.log("projectsCategory", projectsCategory);
+    if (
+      projectsCategory !== "DefaultCategory" &&
+      projectsCategory.trim() !== ""
+    ) {
+      const fetchEmails = async () => {
+        try {
+          const response = await axios.get(
+            `/api/emails?category=${projectsCategory}&search=${searchQuery}&page=${currentPage}&limit=10`
+          );
+          setEmails(response.data.emails);
+          console.log(response.data);
+          setTotalPages(Math.ceil(response.data.total / 10));
+        } catch (error) {
+          console.error("Could not fetch projects", error);
+        }
+      };
+
+      fetchEmails();
+    }
+  }, [projectsCategory, searchQuery, currentPage]);
 
   const handleRemove = async (id) => {
     try {
@@ -39,6 +49,34 @@ function EmailsList() {
       // Тут можна додати обробку помилок, наприклад, показати повідомлення користувачу
     }
   };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const paginationItems = [];
+  for (let p = 1; p <= totalPages; p++) {
+    paginationItems.push(
+      <li
+        key={p}
+        className={`block size-8 rounded ${
+          currentPage === p
+            ? "border-teal-600 bg-teal-600 text-white"
+            : "border-gray-100 bg-white text-gray-900"
+        } text-center leading-8`}
+      >
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            handlePageChange(p);
+          }}
+        >
+          {p}
+        </a>
+      </li>
+    );
+  }
 
   return (
     <div>
@@ -115,6 +153,68 @@ function EmailsList() {
         </div>
       ) : (
         <p>...</p>
+      )}
+
+      {totalPages > 1 && (
+        <ol
+          className="flex justify-center gap-1 text-xs font-medium"
+          data-page={currentPage}
+          data-total={totalPages}
+        >
+          {currentPage > 1 && (
+            <li>
+              <a
+                href="#"
+                className="inline-flex size-8 items-center justify-center rounded border border-gray-100 bg-white text-gray-900 rtl:rotate-180"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePageChange(currentPage - 1);
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-3 w-3"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </a>
+            </li>
+          )}
+
+          {paginationItems}
+
+          {currentPage < totalPages && (
+            <li>
+              <a
+                href="#"
+                className="inline-flex size-8 items-center justify-center rounded border border-gray-100 bg-white text-gray-900"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePageChange(currentPage + 1);
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-3 w-3"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </a>
+            </li>
+          )}
+        </ol>
       )}
     </div>
   );

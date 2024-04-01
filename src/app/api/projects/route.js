@@ -35,8 +35,8 @@ export async function POST(req) {
       domain,
       domainRegistrar,
       hosting,
-      dns, // За умови, що це об'єкт з login та password
-      github, // Також об'єкт з login та password
+      dns,
+      github,
       wpAdmin,
       registerDate,
       expiredDate,
@@ -72,7 +72,6 @@ export async function PATCH(req) {
       testAccess,
     } = await req.json();
 
-    // Перевірте, чи існують domainRegistrar і hosting по ID
     const existingRegistrar = await DomainRegistrar.findById(domainRegistrar);
     const existingHosting = await Hosting.findById(hosting);
 
@@ -81,7 +80,7 @@ export async function PATCH(req) {
     }
 
     const newProject = await Project.updateOne(
-      { _id: projectId }, // Умова, за якою знаходиться документ. Наприклад, за ID.
+      { _id: projectId },
       {
         $set: {
           domain,
@@ -114,9 +113,11 @@ export async function GET(req, res) {
     const id = url.searchParams.get("id");
     const category = url.searchParams.get("category");
     const search = url.searchParams.get("search");
+    const page = parseInt(url.searchParams.get("page")) || 1;
+    const limit = parseInt(url.searchParams.get("limit")) || 10;
+    const skip = (page - 1) * limit;
 
     if (id) {
-      // Якщо slug передано, шукаємо конкретний проект
       const project = await Project.findOne({ _id: id })
         .populate("domainRegistrar")
         .populate("hosting")
@@ -134,11 +135,28 @@ export async function GET(req, res) {
       if (category) {
         matchStage["projectsCategory.name"] = category;
       }
-
-      // Додавання умови пошуку за доменом, якщо search присутній
       if (search) {
-        matchStage["domain"] = { $regex: search, $options: "i" }; // Додавання нечутливого до регістру пошуку
+        matchStage["domain"] = { $regex: search, $options: "i" };
       }
+
+      const totalProjects = await Project.aggregate([
+        {
+          $lookup: {
+            from: "projectscategories",
+            localField: "projectsCategory",
+            foreignField: "_id",
+            as: "projectsCategory",
+          },
+        },
+        {
+          $unwind: "$projectsCategory",
+        },
+        {
+          $match: matchStage,
+        }
+      ]);
+
+      const total = totalProjects.length > 0 ? totalProjects.length : 0;
 
       const projects = await Project.aggregate([
         {
@@ -152,15 +170,25 @@ export async function GET(req, res) {
         {
           $unwind: "$projectsCategory",
         },
-        // Додавання умови пошуку
         {
           $match: matchStage,
         },
+        { $skip: skip },
+        { $limit: limit },
       ]);
 
-      return NextResponse.json({ projects }, { status: 200 });
+      if (search) {
+        return NextResponse.json(
+          { projects: totalProjects, total, page, limit },
+          { status: 200 }
+        );
+      } else {
+        return NextResponse.json(
+          { projects, total, page, limit },
+          { status: 200 }
+        );
+      }
     } else {
-      // Якщо slug не передано, завантажуємо всі проекти
       const projects = await Project.find({})
         .populate("domainRegistrar")
         .populate("hosting")
@@ -178,7 +206,7 @@ export async function GET(req, res) {
 export async function DELETE(req) {
   await dbConnect();
   try {
-    const { id } = await req.json(); // Отримуємо ID проекту, який потрібно видалити
+    const { id } = await req.json();
 
     const deletedProject = await Project.findByIdAndDelete(id);
 

@@ -64,6 +64,9 @@ export async function GET(req, res) {
     const id = url.searchParams.get("id");
     const category = url.searchParams.get("category");
     const search = url.searchParams.get("search");
+    const page = parseInt(url.searchParams.get("page")) || 1;
+    const limit = parseInt(url.searchParams.get("limit")) || 10;
+    const skip = (page - 1) * limit;
 
     if (id) {
       // Якщо slug передано, шукаємо конкретний проект
@@ -87,10 +90,29 @@ export async function GET(req, res) {
       // Додавання умови пошуку за доменом, якщо search присутній
       if (search) {
         matchStage["$or"] = [
-          { "email": { $regex: search, $options: "i" } }, // Додавання пошуку по полю email
-          { "aliases": { $regex: search, $options: "i" } } // Додавання пошуку по полю aliases
+          { email: { $regex: search, $options: "i" } }, // Додавання пошуку по полю email
+          { aliases: { $regex: search, $options: "i" } }, // Додавання пошуку по полю aliases
         ];
       }
+
+      const totalEmails = await EmailAccounts.aggregate([
+        {
+          $lookup: {
+            from: "projectscategories", // the collection to join
+            localField: "emailCategory", // field from the input documents
+            foreignField: "_id", // field from the documents of the "from" collection
+            as: "emailCategory", // output array field
+          },
+        },
+        {
+          $unwind: "$emailCategory", // Deconstructs the array
+        },
+        {
+          $match: matchStage,
+        }
+      ]);
+
+      const total = totalEmails.length > 0 ? totalEmails.length : 0;
 
       const emails = await EmailAccounts.aggregate([
         {
@@ -107,9 +129,15 @@ export async function GET(req, res) {
         {
           $match: matchStage,
         },
+        { $skip: skip },
+        { $limit: limit },
       ]);
 
-      return NextResponse.json({ emails }, { status: 200 });
+      if(search) {
+        return NextResponse.json({ emails: totalEmails, total, page, limit }, { status: 200 });
+      } else {
+        return NextResponse.json({ emails, total, page, limit }, { status: 200 });
+      }
     } else {
       // Якщо slug не передано, завантажуємо всі проекти
       const emails = await EmailAccounts.find({}).populate("emailCategory");
