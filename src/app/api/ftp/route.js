@@ -4,14 +4,14 @@ import FtpAccount from "@/models/FtpAccountSchema";
 export async function POST(req) {
     await dbConnect();
     try {
-        const { protocol, host, login, password, port } = await req.json();
+        const { protocol, host, login, password, port, projectCategory } = await req.json();
 
         // Перевірка на наявність Hosting з таким name і login
         let ftpAccount = await FtpAccount.findOne({ host, login });
 
         if (!ftpAccount) {
             // Якщо не знайдено, створюємо новий
-            ftpAccount = await FtpAccount.create({ protocol, host, login, password, port });
+            ftpAccount = await FtpAccount.create({ protocol, host, login, password, port, projectCategory });
             return new Response(JSON.stringify(ftpAccount), {status: 201});
         } else {
             // Якщо знайдено, повертаємо існуючий

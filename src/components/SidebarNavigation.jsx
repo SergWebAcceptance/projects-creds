@@ -21,6 +21,9 @@ function SidebarNavigation() {
         Projects
       </Link>
       <Link href="/emails" className={`rounded block p-2 ${isActive('/emails') ? 'bg-teal-600 text-white' : ''}`}>Emails</Link>
+      <Link href="/hostings" className={`rounded block p-2 ${isActive('/hostings') ? 'bg-teal-600 text-white' : ''}`}>Hostings</Link>
+      <Link href="/domain-registrars" className={`rounded block p-2 ${isActive('/domain-registrars') ? 'bg-teal-600 text-white' : ''}`}>Domain Registrars</Link>
+      <Link href="/dns-accounts" className={`rounded block p-2 ${isActive('/dns-accounts') ? 'bg-teal-600 text-white' : ''}`}>DNS Accounts</Link>
     </nav>
   );
 }

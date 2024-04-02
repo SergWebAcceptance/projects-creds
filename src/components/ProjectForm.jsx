@@ -41,7 +41,7 @@ function ProjectForm({ projectData, editable = true }) {
 
     const fetchRegistrars = async () => {
       const response = await axios.get("/api/registrars");
-      const adaptedRegistrars = response.data.map((registrar) => ({
+      const adaptedRegistrars = response.data.registrars.map((registrar) => ({
         value: registrar._id,
         label: `${registrar.name} - ${registrar.login}`,
       }));
@@ -50,7 +50,7 @@ function ProjectForm({ projectData, editable = true }) {
 
     const fetchHostings = async () => {
       const response = await axios.get("/api/hostings");
-      const adaptedHostings = response.data.map((hosting) => ({
+      const adaptedHostings = response.data.hostings.map((hosting) => ({
         value: hosting._id,
         label: `${hosting.name} - ${hosting.login}`,
       }));
@@ -59,7 +59,7 @@ function ProjectForm({ projectData, editable = true }) {
 
     const fetchDnsAccounts = async () => {
       const response = await axios.get("/api/dns");
-      const adaptedDnsAccount = response.data.map((dnsAccount) => ({
+      const adaptedDnsAccount = response.data.dnsAccounts.map((dnsAccount) => ({
         value: dnsAccount._id,
         label: `${dnsAccount.name} - ${dnsAccount.login}`,
       }));
@@ -97,6 +97,7 @@ function ProjectForm({ projectData, editable = true }) {
           name: values.newDomainRegistrar,
           login: values.registrarLogin,
           password: values.registrarPassword,
+          projectCategory: values.projectsCategory
         });
         registrarId = registrarResponse.data._id;
       }
@@ -107,6 +108,7 @@ function ProjectForm({ projectData, editable = true }) {
           name: values.newHosting,
           login: values.hostingLogin,
           password: values.hostingPassword,
+          projectCategory: values.projectsCategory
         });
         hostingId = hostingResponse.data._id;
       }
@@ -117,6 +119,7 @@ function ProjectForm({ projectData, editable = true }) {
           name: values.newDnsAccount,
           login: values.dnsAccountLogin,
           password: values.dnsAccountPassword,
+          projectCategory: values.projectsCategory
         });
         dnsAccountId = dnsAccountResponse.data._id;
       }
@@ -128,6 +131,7 @@ function ProjectForm({ projectData, editable = true }) {
           login: values.ftpAccountLogin,
           password: values.ftpAccountPassword,
           port: values.ftpAccountPort,
+          projectCategory: values.projectsCategory
         });
         ftpAccountId = ftpAccountResponse.data._id;
       }
