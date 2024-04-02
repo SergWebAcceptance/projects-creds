@@ -132,8 +132,10 @@ function DnsAccountsList() {
                 key={dnsAccount._id}
                 className="projectRow flex items-center px-4 py-2 rounded mb-4 bg-slate-100 justify-between shadow-md"
               >
-                <span className=" w-2/5">{dnsAccount.name}</span>
-                <span className="w-2/5">{dnsAccount.login}</span>
+                <div className="w-4/5 flex flex-col sm:flex-row">
+                  <span className="w-full sm:w-1/2">{dnsAccount.name}</span>
+                  <span className="w-full sm:w-1/2">{dnsAccount.login}</span>
+                </div>
                 <div className="flex gap-2 w-1/5 justify-end">
                   <Link
                     className="block rounded-md bg-teal-600 px-2 py-2 text-sm font-medium text-white transition hover:bg-teal-700"
