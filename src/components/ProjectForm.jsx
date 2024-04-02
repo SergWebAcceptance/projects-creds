@@ -8,6 +8,13 @@ import Select from "react-select";
 import { Copy, CopyCheck } from "lucide-react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
+const selectStyles = {
+  valueContainer: (base) => ({
+    ...base,
+    height: 43,
+  }),
+};
+
 function ProjectForm({ projectData, editable = true }) {
   const [categories, setCategories] = useState([]);
   const [registrars, setRegistrars] = useState([]);
@@ -69,7 +76,7 @@ function ProjectForm({ projectData, editable = true }) {
 
     const fetchFtpAccounts = async () => {
       const response = await axios.get("/api/ftp");
-      const adaptedFtpAccount = response.data.map((ftpAccount) => ({
+      const adaptedFtpAccount = response.data.ftpAccounts.map((ftpAccount) => ({
         value: ftpAccount._id,
         label: `${ftpAccount.host} - ${ftpAccount.login}`,
       }));
@@ -97,7 +104,7 @@ function ProjectForm({ projectData, editable = true }) {
           name: values.newDomainRegistrar,
           login: values.registrarLogin,
           password: values.registrarPassword,
-          projectCategory: values.projectsCategory
+          projectCategory: values.projectsCategory,
         });
         registrarId = registrarResponse.data._id;
       }
@@ -108,7 +115,7 @@ function ProjectForm({ projectData, editable = true }) {
           name: values.newHosting,
           login: values.hostingLogin,
           password: values.hostingPassword,
-          projectCategory: values.projectsCategory
+          projectCategory: values.projectsCategory,
         });
         hostingId = hostingResponse.data._id;
       }
@@ -119,7 +126,7 @@ function ProjectForm({ projectData, editable = true }) {
           name: values.newDnsAccount,
           login: values.dnsAccountLogin,
           password: values.dnsAccountPassword,
-          projectCategory: values.projectsCategory
+          projectCategory: values.projectsCategory,
         });
         dnsAccountId = dnsAccountResponse.data._id;
       }
@@ -131,7 +138,7 @@ function ProjectForm({ projectData, editable = true }) {
           login: values.ftpAccountLogin,
           password: values.ftpAccountPassword,
           port: values.ftpAccountPort,
-          projectCategory: values.projectsCategory
+          projectCategory: values.projectsCategory,
         });
         ftpAccountId = ftpAccountResponse.data._id;
       }
@@ -219,12 +226,20 @@ function ProjectForm({ projectData, editable = true }) {
         newHosting: "",
         hostingLogin: "",
         hostingPassword: "",
-        dnsAccount: projectData ? projectData.dnsAccount ? projectData.dnsAccount._id : "" : "",
-        
+        dnsAccount: projectData
+          ? projectData.dnsAccount
+            ? projectData.dnsAccount._id
+            : ""
+          : "",
+
         newDnsAccount: "",
         dnsAccountLogin: "",
         dnsAccountPassword: "",
-        ftpAccount: projectData ? projectData.ftpAccount ? projectData.ftpAccount._id : "" : "",
+        ftpAccount: projectData
+          ? projectData.ftpAccount
+            ? projectData.ftpAccount._id
+            : ""
+          : "",
         wpAdminLogin:
           projectData && projectData.wpAdmin ? projectData.wpAdmin.login : "",
         wpAdminPassword:
@@ -326,6 +341,7 @@ function ProjectForm({ projectData, editable = true }) {
               <>
                 {editable ? (
                   <Select
+                    styles={selectStyles}
                     value={findOptionById(registrars, values.domainRegistrar)}
                     options={registrars}
                     onChange={(option) =>
@@ -457,6 +473,7 @@ function ProjectForm({ projectData, editable = true }) {
               <>
                 {editable ? (
                   <Select
+                    styles={selectStyles}
                     value={findOptionById(hostings, values.hosting)}
                     options={hostings}
                     onChange={(option) =>
@@ -650,6 +667,7 @@ function ProjectForm({ projectData, editable = true }) {
               <>
                 {editable ? (
                   <Select
+                    styles={selectStyles}
                     value={findOptionById(dnsAccounts, values.dnsAccount)}
                     options={dnsAccounts}
                     onChange={(option) =>
@@ -661,7 +679,9 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData.dnsAccount ? `${projectData.dnsAccount.name} ` : ""
+                          projectData.dnsAccount
+                            ? `${projectData.dnsAccount.name} `
+                            : ""
                         }
                         disabled={!editable}
                         type="text"
@@ -672,7 +692,9 @@ function ProjectForm({ projectData, editable = true }) {
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData.dnsAccount ? `${projectData.dnsAccount.name} ` : ""
+                            projectData.dnsAccount
+                              ? `${projectData.dnsAccount.name} `
+                              : ""
                           }
                         />
                       )}
@@ -680,7 +702,9 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData.dnsAccount ? `${projectData.dnsAccount.login}` : ""
+                          projectData.dnsAccount
+                            ? `${projectData.dnsAccount.login}`
+                            : ""
                         }
                         disabled={!editable}
                         type="text"
@@ -691,7 +715,9 @@ function ProjectForm({ projectData, editable = true }) {
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData.dnsAccount ? `${projectData.dnsAccount.login}` : ""
+                            projectData.dnsAccount
+                              ? `${projectData.dnsAccount.login}`
+                              : ""
                           }
                         />
                       )}
@@ -699,7 +725,9 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData.dnsAccount ? `${projectData.dnsAccount.password}` : ""
+                          projectData.dnsAccount
+                            ? `${projectData.dnsAccount.password}`
+                            : ""
                         }
                         disabled={!editable}
                         type="text"
@@ -710,7 +738,9 @@ function ProjectForm({ projectData, editable = true }) {
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData.dnsAccount ? `${projectData.dnsAccount.password}` : ""
+                            projectData.dnsAccount
+                              ? `${projectData.dnsAccount.password}`
+                              : ""
                           }
                         />
                       )}
@@ -759,7 +789,9 @@ function ProjectForm({ projectData, editable = true }) {
                     as="input"
                     className="w-full rounded-lg border-gray-200 p-3 text-sm border"
                   />
+
                   <Select
+                    styles={selectStyles}
                     options={ftpProtocolOptions}
                     onChange={(option) =>
                       setFieldValue("ftpAccountProtocol", option.value)
@@ -790,6 +822,7 @@ function ProjectForm({ projectData, editable = true }) {
               <>
                 {editable ? (
                   <Select
+                    styles={selectStyles}
                     value={findOptionById(ftpAccounts, values.ftpAccount)}
                     options={ftpAccounts}
                     onChange={(option) =>
@@ -801,7 +834,9 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData.ftpAccount ? `${projectData.ftpAccount.host} ` : ""
+                          projectData.ftpAccount
+                            ? `${projectData.ftpAccount.host} `
+                            : ""
                         }
                         disabled={!editable}
                         type="text"
@@ -812,7 +847,9 @@ function ProjectForm({ projectData, editable = true }) {
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData.ftpAccount ? `${projectData.ftpAccount.host} ` : ""
+                            projectData.ftpAccount
+                              ? `${projectData.ftpAccount.host} `
+                              : ""
                           }
                         />
                       )}
@@ -820,7 +857,9 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData.ftpAccount ? `${projectData.ftpAccount.protocol} ` : ""
+                          projectData.ftpAccount
+                            ? `${projectData.ftpAccount.protocol} `
+                            : ""
                         }
                         disabled={!editable}
                         type="text"
@@ -831,7 +870,9 @@ function ProjectForm({ projectData, editable = true }) {
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData.ftpAccount ? `${projectData.ftpAccount.protocol} ` : ""
+                            projectData.ftpAccount
+                              ? `${projectData.ftpAccount.protocol} `
+                              : ""
                           }
                         />
                       )}
@@ -839,7 +880,9 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData.ftpAccount ? `${projectData.ftpAccount.login}` : ""
+                          projectData.ftpAccount
+                            ? `${projectData.ftpAccount.login}`
+                            : ""
                         }
                         disabled={!editable}
                         type="text"
@@ -850,7 +893,9 @@ function ProjectForm({ projectData, editable = true }) {
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData.ftpAccount ? `${projectData.ftpAccount.login}` : ""
+                            projectData.ftpAccount
+                              ? `${projectData.ftpAccount.login}`
+                              : ""
                           }
                         />
                       )}
@@ -858,7 +903,9 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData.ftpAccount ? `${projectData.ftpAccount.password}` : ""
+                          projectData.ftpAccount
+                            ? `${projectData.ftpAccount.password}`
+                            : ""
                         }
                         disabled={!editable}
                         type="text"
@@ -869,7 +916,9 @@ function ProjectForm({ projectData, editable = true }) {
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData.ftpAccount ? `${projectData.ftpAccount.password}` : ""
+                            projectData.ftpAccount
+                              ? `${projectData.ftpAccount.password}`
+                              : ""
                           }
                         />
                       )}
@@ -877,7 +926,9 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData.ftpAccount ? `${projectData.ftpAccount.port}` : ""
+                          projectData.ftpAccount
+                            ? `${projectData.ftpAccount.port}`
+                            : ""
                         }
                         disabled={!editable}
                         type="text"
@@ -888,7 +939,9 @@ function ProjectForm({ projectData, editable = true }) {
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData.ftpAccount ? `${projectData.ftpAccount.port}` : ""
+                            projectData.ftpAccount
+                              ? `${projectData.ftpAccount.port}`
+                              : ""
                           }
                         />
                       )}
@@ -957,6 +1010,7 @@ function ProjectForm({ projectData, editable = true }) {
             <>
               {editable ? (
                 <Select
+                  styles={selectStyles}
                   value={findOptionById(categories, values.projectsCategory)}
                   options={categories}
                   onChange={(option) =>

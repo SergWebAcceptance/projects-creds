@@ -24,7 +24,7 @@ function Header() {
         <div className="mx-auto flex max-w-screen-xl items-center gap-8 px-4  mt-4 sm:px-6 lg:px-8">
           <div className="flex flex-1 flex-col sm:flex-row items-center justify-between gap-4">
             <nav aria-label="Global" className="block">
-              <ul className="flex items-center gap-6 text-sm">
+              <ul className="flex items-center gap-6 text-xs">
                 {userRole !== "manager" && (
                   <li>
                     <Link
@@ -64,37 +64,43 @@ function Header() {
                 {userRole !== "manager" && (
                   <>
                     <Link
-                      className="flex gap-2 items-center rounded-md bg-teal-600 px-3 py-1 text-sm font-medium text-white transition hover:bg-teal-700"
+                      className="flex gap-2 items-center rounded-md bg-teal-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-teal-700"
                       href="/users"
                     >
                       Users
                     </Link>
                     <Link
-                      className="flex gap-2 items-center rounded-md bg-teal-600 px-3 py-1 text-sm font-medium text-white transition hover:bg-teal-700"
+                      className="flex gap-2 items-center rounded-md bg-teal-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-teal-700"
                       href="/form-email"
                     >
                       <Plus /> Email
                     </Link>
                     <Link
-                      className="flex gap-2 items-center rounded-md bg-teal-600 px-3 py-1 text-sm font-medium text-white transition hover:bg-teal-700"
+                      className="flex gap-2 items-center rounded-md bg-teal-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-teal-700"
                       href="/form-hostings"
                     >
                       <Plus /> Hosting
                     </Link>
                     <Link
-                      className="flex gap-2 items-center rounded-md bg-teal-600 px-3 py-1 text-sm font-medium text-white transition hover:bg-teal-700"
+                      className="flex gap-2 items-center rounded-md bg-teal-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-teal-700"
                       href="/form-domain-registers"
                     >
                       <Plus /> Domain Registrar
                     </Link>
                     <Link
-                      className="flex gap-2 items-center rounded-md bg-teal-600 px-3 py-1 text-sm font-medium text-white transition hover:bg-teal-700"
+                      className="flex gap-2 items-center rounded-md bg-teal-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-teal-700"
                       href="/form-dns"
                     >
                       <Plus /> DNS Account
                     </Link>
                     <Link
-                      className="flex gap-2 items-center rounded-md bg-teal-600 px-3 py-1 text-sm font-medium text-white transition hover:bg-teal-700"
+                      className="flex gap-2 items-center rounded-md bg-teal-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-teal-700"
+                      href="/form-ftp"
+                    >
+                      <Plus /> FTP Account
+                    </Link>
+                    <Link
+                      className="flex gap-2 items-center rounded-md bg-teal-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-teal-700"
                       href="/form"
                     >
                       <Plus /> Project
@@ -103,7 +109,7 @@ function Header() {
                 )}
 
                 <button
-                  className="flex gap-2 items-center rounded-md bg-red-600 px-3 py-1 text-sm font-medium text-white transition hover:bg-red-700"
+                  className="flex gap-2 items-center rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-red-700"
                   onClick={logoutHandler}
                 >
                   Logout
