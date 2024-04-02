@@ -1,6 +1,7 @@
 import dbConnect from "@/lib/db";
 import Category from "@/models/ProjectsCategory";
 
+
 export async function GET(res) {
     await dbConnect();
     try {

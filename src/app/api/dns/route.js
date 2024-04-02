@@ -1,6 +1,7 @@
 import dbConnect from "@/lib/db";
 import DnsAccount from "@/models/DnsSchema";
 import { NextResponse } from "next/server";
+import ProjectsCategory from "@/models/ProjectsCategory";
 
 export async function POST(req) {
     await dbConnect();

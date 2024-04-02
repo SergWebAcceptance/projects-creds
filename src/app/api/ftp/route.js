@@ -1,6 +1,7 @@
 import dbConnect from "@/lib/db";
 import FtpAccount from "@/models/FtpAccountSchema";
 import { NextResponse } from "next/server";
+import ProjectsCategory from "@/models/ProjectsCategory";
 
 export async function POST(req) {
     await dbConnect();
