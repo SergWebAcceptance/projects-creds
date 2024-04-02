@@ -67,7 +67,7 @@ function AddFtpAccountForm({ projectData, editable = true }) {
       setSubmitting(false);
       resetForm();
       if (!projectData) {
-        router.push("/");
+        router.push("/ftp-accounts");
       } else {
         window.location.reload();
       }

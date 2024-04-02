@@ -38,7 +38,7 @@ function FtpAccountsList() {
   const handleRemove = async (id) => {
     try {
       // Використання axios.delete з конфігурацією для включення тіла запиту
-      await axios.delete(`/api/dns`, { data: { id } });
+      await axios.delete(`/api/ftp`, { data: { id } });
       // Оновлення стану для відображення змін без перезавантаження
       setFtpAccounts(ftpAccounts.filter((ftpAccount) => ftpAccount._id !== id));
     } catch (error) {
