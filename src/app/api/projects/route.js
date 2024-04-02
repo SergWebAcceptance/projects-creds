@@ -4,6 +4,9 @@ import DomainRegistrar from "@/models/DomainRegistrar";
 import Hosting from "@/models/HostingSchema";
 import ProjectsCategory from "@/models/ProjectsCategory";
 import { NextResponse } from "next/server";
+import DnsAccount from "@/models/DnsSchema";
+import FtpAccount from "@/models/FtpAccountSchema";
+
 
 export async function POST(req) {
   try {
@@ -13,7 +16,8 @@ export async function POST(req) {
       domain,
       domainRegistrar,
       hosting,
-      dns,
+      dnsAccount,
+      ftpAccount,
       github,
       wpAdmin,
       registerDate,
@@ -26,8 +30,10 @@ export async function POST(req) {
     // Перевірте, чи існують domainRegistrar і hosting по ID
     const existingRegistrar = await DomainRegistrar.findById(domainRegistrar);
     const existingHosting = await Hosting.findById(hosting);
+    const existingDNSAccount = await DnsAccount.findById(dnsAccount);
+    const existingFTPAccount = await FtpAccount.findById(ftpAccount);
 
-    if (!existingRegistrar || !existingHosting) {
+    if (!existingRegistrar || !existingHosting || !existingDNSAccount || !existingFTPAccount) {
       throw new Error("Domain Registrar or Hosting not found");
     }
 
@@ -35,7 +41,8 @@ export async function POST(req) {
       domain,
       domainRegistrar,
       hosting,
-      dns,
+      dnsAccount,
+      ftpAccount,
       github,
       wpAdmin,
       registerDate,
@@ -62,7 +69,8 @@ export async function PATCH(req) {
       domain,
       domainRegistrar,
       hosting,
-      dns,
+      dnsAccount,
+      ftpAccount,
       github,
       wpAdmin,
       registerDate,
@@ -74,8 +82,10 @@ export async function PATCH(req) {
 
     const existingRegistrar = await DomainRegistrar.findById(domainRegistrar);
     const existingHosting = await Hosting.findById(hosting);
+    const existingDNSAccount = await DnsAccount.findById(dnsAccount);
+    const existingFTPAccount = await FtpAccount.findById(ftpAccount);
 
-    if (!existingRegistrar || !existingHosting) {
+    if (!existingRegistrar || !existingHosting || !existingDNSAccount || !existingFTPAccount) {
       throw new Error("Domain Registrar or Hosting not found");
     }
 
@@ -86,7 +96,8 @@ export async function PATCH(req) {
           domain,
           domainRegistrar,
           hosting,
-          dns,
+          dnsAccount,
+          ftpAccount,
           github,
           wpAdmin,
           registerDate,
@@ -121,7 +132,9 @@ export async function GET(req, res) {
       const project = await Project.findOne({ _id: id })
         .populate("domainRegistrar")
         .populate("hosting")
-        .populate("projectsCategory");
+        .populate("projectsCategory")
+        .populate("dnsAccount")
+        .populate("ftpAccount");
 
       if (!project) {
         return NextResponse.json(
@@ -192,7 +205,9 @@ export async function GET(req, res) {
       const projects = await Project.find({})
         .populate("domainRegistrar")
         .populate("hosting")
-        .populate("projectsCategory");
+        .populate("projectsCategory")
+        .populate("dnsAccount")
+        .populate("ftpAccount");
 
       return NextResponse.json({ projects }, { status: 200 });
     }

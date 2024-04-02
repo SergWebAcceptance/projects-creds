@@ -5,18 +5,14 @@ const CredentialsSchema = new Schema({
   login: { type: String, required: false },
   password: { type: String, required: false },
 });
-const dnsSchema = new Schema({
-  name: { type: String, required: false },
-  login: { type: String, required: false },
-  password: { type: String, required: false },
-});
-const ftpSshSchema = new Schema({
+
+/*const ftpSshSchema = new Schema({
   protocol: { type: String, required: false },
   host: { type: String, required: false },
   login: { type: String, required: false },
   password: { type: String, required: false },
   port: { type: Number, required: false },
-});
+});*/
 
 const ProjectSchema = new Schema({
   domain: { type: String, required: true },
@@ -26,8 +22,16 @@ const ProjectSchema = new Schema({
     required: true,
   },
   hosting: { type: Schema.Types.ObjectId, ref: "Hosting", required: true },
-  dns: { type: dnsSchema, required: false },
-  ftpSsh: { type: ftpSshSchema, required: false },
+  dnsAccount: {
+    type: Schema.Types.ObjectId,
+    ref: "DnsAccount",
+    required: false,
+  },
+  ftpAccount: {
+    type: Schema.Types.ObjectId,
+    ref: "FtpAccount",
+    required: false,
+  },
   github: { type: CredentialsSchema, required: false },
   wpAdmin: { type: CredentialsSchema, required: false },
   testAccess: { type: CredentialsSchema, required: false },

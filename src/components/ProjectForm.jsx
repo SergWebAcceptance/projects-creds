@@ -12,10 +12,19 @@ function ProjectForm({ projectData, editable = true }) {
   const [categories, setCategories] = useState([]);
   const [registrars, setRegistrars] = useState([]);
   const [hostings, setHostings] = useState([]);
+  const [dnsAccounts, setDnsAccounts] = useState([]);
+  const [ftpAccounts, setFtpAccounts] = useState([]);
   const [isNewRegistrar, setIsNewRegistrar] = useState(false);
+  const [isNewDnsAccount, setIsNewDnsAccount] = useState(false);
+  const [isNewFtpAccount, setIsNewFtpAccount] = useState(false);
   const [isNewHosting, setIsNewHosting] = useState(false);
   const router = useRouter();
   const [copied, setCopied] = useState(null);
+
+  const ftpProtocolOptions = [
+    { value: "ftp", label: "ftp" },
+    { value: "sftp", label: "sftp" },
+  ];
 
   useEffect(() => {
     console.log(projectData);
@@ -48,15 +57,39 @@ function ProjectForm({ projectData, editable = true }) {
       setHostings(adaptedHostings);
     };
 
+    const fetchDnsAccounts = async () => {
+      const response = await axios.get("/api/dns");
+      const adaptedDnsAccount = response.data.map((dnsAccount) => ({
+        value: dnsAccount._id,
+        label: `${dnsAccount.name} - ${dnsAccount.login}`,
+      }));
+      console.log(adaptedDnsAccount);
+      setDnsAccounts(adaptedDnsAccount);
+    };
+
+    const fetchFtpAccounts = async () => {
+      const response = await axios.get("/api/ftp");
+      const adaptedFtpAccount = response.data.map((ftpAccount) => ({
+        value: ftpAccount._id,
+        label: `${ftpAccount.host} - ${ftpAccount.login}`,
+      }));
+      console.log(adaptedFtpAccount);
+      setFtpAccounts(adaptedFtpAccount);
+    };
+
     fetchRegistrars();
     fetchHostings();
     fetchCategories();
+    fetchDnsAccounts();
+    fetchFtpAccounts();
   }, []);
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
       let registrarId = values.domainRegistrar;
       let hostingId = values.hosting;
+      let dnsAccountId = values.dnsAccount;
+      let ftpAccountId = values.ftpAccount;
 
       // Якщо додається новий domainRegistrar
       if (isNewRegistrar && values.newDomainRegistrar) {
@@ -78,23 +111,34 @@ function ProjectForm({ projectData, editable = true }) {
         hostingId = hostingResponse.data._id;
       }
 
+      // Якщо додається новий dns
+      if (isNewDnsAccount && values.newDnsAccount) {
+        const dnsAccountResponse = await axios.post("/api/dns", {
+          name: values.newDnsAccount,
+          login: values.dnsAccountLogin,
+          password: values.dnsAccountPassword,
+        });
+        dnsAccountId = dnsAccountResponse.data._id;
+      }
+
+      if (isNewFtpAccount && values.newFtpAccount) {
+        const ftpAccountResponse = await axios.post("/api/ftp", {
+          host: values.newFtpAccount,
+          protocol: values.ftpAccountProtocol,
+          login: values.ftpAccountLogin,
+          password: values.ftpAccountPassword,
+          port: values.ftpAccountPort,
+        });
+        ftpAccountId = ftpAccountResponse.data._id;
+      }
+
       if (!projectData) {
         await axios.post("/api/projects", {
           domain: values.domain,
           domainRegistrar: registrarId,
           hosting: hostingId,
-          dns: {
-            name: values.dnsName,
-            login: values.dnsLogin,
-            password: values.dnsPassword,
-          },
-          ftpSsh: {
-            protocol: values.ftpSshProtocol,
-            host: values.ftpSshHost,
-            login: values.ftpSshLogin,
-            password: values.ftpSshPassword,
-            port: values.ftpSshPort,
-          },
+          dnsAccount: dnsAccountId,
+          ftpAccount: ftpAccountId,
           github: {
             login: values.githubLogin,
             password: values.githubPassword,
@@ -117,18 +161,8 @@ function ProjectForm({ projectData, editable = true }) {
           domain: values.domain,
           domainRegistrar: registrarId,
           hosting: hostingId,
-          dns: {
-            name: values.dnsName,
-            login: values.dnsLogin,
-            password: values.dnsPassword,
-          },
-          ftpSsh: {
-            protocol: values.ftpSshProtocol,
-            host: values.ftpSshHost,
-            login: values.ftpSshLogin,
-            password: values.ftpSshPassword,
-            port: values.ftpSshPort,
-          },
+          dnsAccount: dnsAccountId,
+          ftpAccount: ftpAccountId,
           github: {
             login: values.githubLogin,
             password: values.githubPassword,
@@ -181,6 +215,12 @@ function ProjectForm({ projectData, editable = true }) {
         newHosting: "",
         hostingLogin: "",
         hostingPassword: "",
+        dnsAccount: projectData ? projectData.dnsAccount ? projectData.dnsAccount._id : "" : "",
+        
+        newDnsAccount: "",
+        dnsAccountLogin: "",
+        dnsAccountPassword: "",
+        ftpAccount: projectData ? projectData.ftpAccount ? projectData.ftpAccount._id : "" : "",
         wpAdminLogin:
           projectData && projectData.wpAdmin ? projectData.wpAdmin.login : "",
         wpAdminPassword:
@@ -195,10 +235,6 @@ function ProjectForm({ projectData, editable = true }) {
           projectData && projectData.testAccess
             ? projectData.testAccess.password
             : "",
-        dnsLogin: projectData && projectData.dns ? projectData.dns.login : "",
-        dnsPassword:
-          projectData && projectData.dns ? projectData.dns.password : "",
-        dnsName: projectData && projectData.dns ? projectData.dns.name : "",
         githubLogin:
           projectData && projectData.github ? projectData.github.login : "",
         githubPassword:
@@ -210,16 +246,6 @@ function ProjectForm({ projectData, editable = true }) {
         expiredDate:
           projectData && projectData.expiredDate ? projectData.expiredDate : "",
         projectsCategory: projectData ? projectData.projectsCategory._id : "",
-        ftpSshProtocol:
-          projectData && projectData.ftpSsh ? projectData.ftpSsh.protocol : "",
-        ftpSshHost:
-          projectData && projectData.ftpSsh ? projectData.ftpSsh.host : "",
-        ftpSshLogin:
-          projectData && projectData.ftpSsh ? projectData.ftpSsh.login : "",
-        ftpSshPassword:
-          projectData && projectData.ftpSsh ? projectData.ftpSsh.password : "",
-        ftpSshPort:
-          projectData && projectData.ftpSsh ? projectData.ftpSsh.port : "",
       }}
       onSubmit={handleSubmit}
     >
@@ -402,7 +428,7 @@ function ProjectForm({ projectData, editable = true }) {
             <h2>Hosting Account</h2>
             {isNewHosting ? (
               <>
-                <div className="flex  flex-col sm:flex-rowgap-4">
+                <div className="flex  flex-col sm:flex-row gap-4">
                   <Field
                     name="newHosting"
                     placeholder="New Hosting Name"
@@ -447,9 +473,11 @@ function ProjectForm({ projectData, editable = true }) {
                         className="w-full rounded-lg border-gray-200 p-3 text-sm border"
                       />
                       {!editable && (
-                        <CopyButton copyValue={
-                          projectData ? `${projectData.hosting.name} ` : ""
-                        } />
+                        <CopyButton
+                          copyValue={
+                            projectData ? `${projectData.hosting.name} ` : ""
+                          }
+                        />
                       )}
                     </div>
                     <div className="relative w-full">
@@ -587,106 +615,303 @@ function ProjectForm({ projectData, editable = true }) {
 
           <div
             className={`space-y-2 mt-6 pt-4 border-t-2 border-gray-200 ${
-              projectData && !editable ? (projectData.dns ? "" : "hidden") : ""
+              projectData && !editable ? (projectData ? "" : "hidden") : ""
             }`}
           >
             <h2>DNS Account</h2>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="relative w-full">
-                <Field
-                  disabled={!editable}
-                  type="text"
-                  name="dnsName"
-                  placeholder="dnsName"
-                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                />
-                {!editable && <CopyButton copyValue={values.dnsName} />}
+            {isNewDnsAccount ? (
+              <>
+                <div className="flex  flex-col sm:flex-row gap-4">
+                  <Field
+                    name="newDnsAccount"
+                    placeholder="New dnsAccount Name"
+                    as="input"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
+                  <Field
+                    name="dnsAccountLogin"
+                    placeholder="dnsAccount Login"
+                    as="input"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
+                  <Field
+                    name="dnsAccountPassword"
+                    placeholder="dnsAccount Password"
+                    as="input"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                {editable ? (
+                  <Select
+                    value={findOptionById(dnsAccounts, values.dnsAccount)}
+                    options={dnsAccounts}
+                    onChange={(option) =>
+                      setFieldValue("dnsAccount", option.value)
+                    }
+                  />
+                ) : (
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData.dnsAccount ? `${projectData.dnsAccount.name} ` : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="dnsAccountNamePlaceholder"
+                        placeholder="dnsAccount"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData.dnsAccount ? `${projectData.dnsAccount.name} ` : ""
+                          }
+                        />
+                      )}
+                    </div>
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData.dnsAccount ? `${projectData.dnsAccount.login}` : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="dnsAccountLoginPlaceholder"
+                        placeholder="dnsAccountLogin"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData.dnsAccount ? `${projectData.dnsAccount.login}` : ""
+                          }
+                        />
+                      )}
+                    </div>
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData.dnsAccount ? `${projectData.dnsAccount.password}` : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="dnsAccountPasswordPlaceholder"
+                        placeholder="dnsAccountPassword"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData.dnsAccount ? `${projectData.dnsAccount.password}` : ""
+                          }
+                        />
+                      )}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {editable && (
+              <div className="flex gap-3 items-center mt-1">
+                <label
+                  htmlFor="dnsAccountAcceptConditions"
+                  className="relative h-4 w-8 cursor-pointer rounded-full bg-gray-300 transition [-webkit-tap-highlight-color:_transparent] has-[:checked]:bg-green-500"
+                >
+                  <input
+                    type="checkbox"
+                    id="dnsAccountAcceptConditions"
+                    className="peer sr-only"
+                    checked={isNewDnsAccount}
+                    onChange={() => setIsNewDnsAccount(!isNewDnsAccount)}
+                  />
+                  <span className="absolute inset-y-0 start-0 m-1 size-2 rounded-full bg-white transition-all peer-checked:start-4"></span>
+                </label>
+                Add New DNS Account
               </div>
-              <div className="relative w-full">
-                <Field
-                  disabled={!editable}
-                  type="text"
-                  name="dnsLogin"
-                  placeholder="dnsLogin"
-                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                />
-                {!editable && <CopyButton copyValue={values.dnsLogin} />}
-              </div>
-              <div className="relative w-full">
-                <Field
-                  disabled={!editable}
-                  type="text"
-                  name="dnsPassword"
-                  placeholder="dnsPassword"
-                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                />
-                {!editable && <CopyButton copyValue={values.dnsPassword} />}
-              </div>
-            </div>
+            )}
           </div>
 
           <div
             className={`space-y-2 mt-6 pt-4 border-t-2 border-gray-200 ${
               projectData && !editable
-                ? projectData.ftpSsh
+                ? projectData.ftpAccount
                   ? ""
                   : "hidden"
                 : ""
             }`}
           >
-            <h2>FTP/SSH Account</h2>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="relative w-full">
-                <Field
-                  disabled={!editable}
-                  type="text"
-                  name="ftpSshProtocol"
-                  placeholder="ftpSshProtocol"
-                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                />
-                {!editable && <CopyButton copyValue={values.ftpSshProtocol} />}
+            <h2>FTP Account</h2>
+            {isNewFtpAccount ? (
+              <>
+                <div className="flex  flex-col sm:flex-row gap-4">
+                  <Field
+                    name="newFtpAccount"
+                    placeholder="New FtpAccount Host"
+                    as="input"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
+                  <Select
+                    options={ftpProtocolOptions}
+                    onChange={(option) =>
+                      setFieldValue("ftpAccountProtocol", option.value)
+                    }
+                    className="w-full"
+                  />
+                  <Field
+                    name="ftpAccountLogin"
+                    placeholder="ftpAccount Login"
+                    as="input"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
+                  <Field
+                    name="ftpAccountPassword"
+                    placeholder="ftpAccount Password"
+                    as="input"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
+                  <Field
+                    name="ftpAccountPort"
+                    placeholder="ftpAccount Port"
+                    as="input"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                {editable ? (
+                  <Select
+                    value={findOptionById(ftpAccounts, values.ftpAccount)}
+                    options={ftpAccounts}
+                    onChange={(option) =>
+                      setFieldValue("ftpAccount", option.value)
+                    }
+                  />
+                ) : (
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData.ftpAccount ? `${projectData.ftpAccount.host} ` : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="ftpAccountHostPlaceholder"
+                        placeholder="ftpAccountHost"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData.ftpAccount ? `${projectData.ftpAccount.host} ` : ""
+                          }
+                        />
+                      )}
+                    </div>
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData.ftpAccount ? `${projectData.ftpAccount.protocol} ` : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="ftpAccountProtocolPlaceholder"
+                        placeholder="ftpAccountProtocol"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData.ftpAccount ? `${projectData.ftpAccount.protocol} ` : ""
+                          }
+                        />
+                      )}
+                    </div>
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData.ftpAccount ? `${projectData.ftpAccount.login}` : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="ftpAccountLoginPlaceholder"
+                        placeholder="ftpAccountLogin"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData.ftpAccount ? `${projectData.ftpAccount.login}` : ""
+                          }
+                        />
+                      )}
+                    </div>
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData.ftpAccount ? `${projectData.ftpAccount.password}` : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="ftpAccountPasswordPlaceholder"
+                        placeholder="ftpAccountPassword"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData.ftpAccount ? `${projectData.ftpAccount.password}` : ""
+                          }
+                        />
+                      )}
+                    </div>
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData.ftpAccount ? `${projectData.ftpAccount.port}` : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="ftpAccountPortPlaceholder"
+                        placeholder="ftpAccountPort"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData.ftpAccount ? `${projectData.ftpAccount.port}` : ""
+                          }
+                        />
+                      )}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {editable && (
+              <div className="flex gap-3 items-center mt-1">
+                <label
+                  htmlFor="ftpAccountAcceptConditions"
+                  className="relative h-4 w-8 cursor-pointer rounded-full bg-gray-300 transition [-webkit-tap-highlight-color:_transparent] has-[:checked]:bg-green-500"
+                >
+                  <input
+                    type="checkbox"
+                    id="ftpAccountAcceptConditions"
+                    className="peer sr-only"
+                    checked={isNewFtpAccount}
+                    onChange={() => setIsNewFtpAccount(!isNewFtpAccount)}
+                  />
+                  <span className="absolute inset-y-0 start-0 m-1 size-2 rounded-full bg-white transition-all peer-checked:start-4"></span>
+                </label>
+                Add New FTP Account
               </div>
-              <div className="relative w-full">
-                <Field
-                  disabled={!editable}
-                  type="text"
-                  name="ftpSshHost"
-                  placeholder="ftpSshHost"
-                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                />
-                {!editable && <CopyButton copyValue={values.ftpSshHost} />}
-              </div>
-              <div className="relative w-full">
-                <Field
-                  disabled={!editable}
-                  type="text"
-                  name="ftpSshLogin"
-                  placeholder="ftpSshLogin"
-                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                />
-                {!editable && <CopyButton copyValue={values.ftpSshLogin} />}
-              </div>
-              <div className="relative w-full">
-                <Field
-                  disabled={!editable}
-                  type="text"
-                  name="ftpSshPassword"
-                  placeholder="ftpSshPassword"
-                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                />
-                {!editable && <CopyButton copyValue={values.ftpSshPassword} />}
-              </div>
-              <div className="relative w-full">
-                <Field
-                  disabled={!editable}
-                  type="text"
-                  name="ftpSshPort"
-                  placeholder="ftpSshPort"
-                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                />
-                {!editable && <CopyButton copyValue={values.ftpSshPort} />}
-              </div>
-            </div>
+            )}
           </div>
 
           <div
