@@ -59,8 +59,8 @@ function Header() {
               </ul>
             </nav>
 
-            <div className="flex items-center gap-4">
-              <div className="flex flex-wrap justify-center sm:justify-end gap-2 sm:flex sm:gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex flex-wrap justify-center sm:justify-end gap-2 sm:flex sm:gap-2">
                 {userRole !== "manager" && (
                   <>
                     <Link
@@ -98,6 +98,12 @@ function Header() {
                       href="/form-ftp"
                     >
                       <Plus /> FTP Account
+                    </Link>
+                    <Link
+                      className="flex gap-2 items-center rounded-md bg-teal-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-teal-700"
+                      href="/form-git"
+                    >
+                      <Plus /> Git Account
                     </Link>
                     <Link
                       className="flex gap-2 items-center rounded-md bg-teal-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-teal-700"

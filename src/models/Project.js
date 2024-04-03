@@ -32,7 +32,11 @@ const ProjectSchema = new Schema({
     ref: "FtpAccount",
     required: false,
   },
-  github: { type: CredentialsSchema, required: false },
+  gitAccount: {
+    type: Schema.Types.ObjectId,
+    ref: "GitAccount",
+    required: false,
+  },
   wpAdmin: { type: CredentialsSchema, required: false },
   testAccess: { type: CredentialsSchema, required: false },
   registerDate:{ type: String, required: false },

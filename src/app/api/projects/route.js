@@ -6,7 +6,7 @@ import ProjectsCategory from "@/models/ProjectsCategory";
 import { NextResponse } from "next/server";
 import DnsAccount from "@/models/DnsSchema";
 import FtpAccount from "@/models/FtpAccountSchema";
-
+import GitAccount from "@/models/GitSchema";
 
 export async function POST(req) {
   try {
@@ -17,8 +17,8 @@ export async function POST(req) {
       domainRegistrar,
       hosting,
       dnsAccount,
+      gitAccount,
       ftpAccount,
-      github,
       wpAdmin,
       registerDate,
       expiredDate,
@@ -58,8 +58,8 @@ export async function POST(req) {
       domainRegistrar,
       hosting,
       dnsAccount,
+      gitAccount,
       ftpAccount,
-      github,
       wpAdmin,
       registerDate,
       expiredDate,
@@ -86,8 +86,8 @@ export async function PATCH(req) {
       domainRegistrar,
       hosting,
       dnsAccount,
+      gitAccount,
       ftpAccount,
-      github,
       wpAdmin,
       registerDate,
       expiredDate,
@@ -123,9 +123,6 @@ export async function PATCH(req) {
       }
     }
 
-    if (!existingRegistrar || !existingHosting || !existingDNSAccount || !existingFTPAccount) {
-      throw new Error("Domain Registrar or Hosting not found");
-    }
 
   
 
@@ -138,7 +135,7 @@ export async function PATCH(req) {
           hosting,
           dnsAccount,
           ftpAccount,
-          github,
+          gitAccount,
           wpAdmin,
           registerDate,
           expiredDate,
@@ -174,7 +171,8 @@ export async function GET(req, res) {
         .populate("hosting")
         .populate("projectsCategory")
         .populate("dnsAccount")
-        .populate("ftpAccount");
+        .populate("ftpAccount")
+        .populate("gitAccount");
 
       if (!project) {
         return NextResponse.json(
@@ -247,7 +245,8 @@ export async function GET(req, res) {
         .populate("hosting")
         .populate("projectsCategory")
         .populate("dnsAccount")
-        .populate("ftpAccount");
+        .populate("ftpAccount")
+        .populate("gitAccount");
 
       return NextResponse.json({ projects }, { status: 200 });
     }

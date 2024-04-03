@@ -20,10 +20,12 @@ function ProjectForm({ projectData, editable = true }) {
   const [registrars, setRegistrars] = useState([]);
   const [hostings, setHostings] = useState([]);
   const [dnsAccounts, setDnsAccounts] = useState([]);
+  const [gitAccounts, setGitAccounts] = useState([]);
   const [ftpAccounts, setFtpAccounts] = useState([]);
   const [isNewRegistrar, setIsNewRegistrar] = useState(false);
   const [isNewDnsAccount, setIsNewDnsAccount] = useState(false);
   const [isNewFtpAccount, setIsNewFtpAccount] = useState(false);
+  const [isNewGitAccount, setIsNewGitAccount] = useState(false);
   const [isNewHosting, setIsNewHosting] = useState(false);
   const router = useRouter();
   const [copied, setCopied] = useState(null);
@@ -74,6 +76,16 @@ function ProjectForm({ projectData, editable = true }) {
       setDnsAccounts(adaptedDnsAccount);
     };
 
+    const fetchGitAccounts = async () => {
+      const response = await axios.get("/api/gitAccounts");
+      const adaptedGitAccounts = response.data.gitAccounts.map((gitAccount) => ({
+        value: gitAccount._id,
+        label: `${gitAccount.login}`,
+      }));
+      console.log(adaptedGitAccounts);
+      setGitAccounts(adaptedGitAccounts);
+    };
+
     const fetchFtpAccounts = async () => {
       const response = await axios.get("/api/ftp");
       const adaptedFtpAccount = response.data.ftpAccounts.map((ftpAccount) => ({
@@ -89,6 +101,7 @@ function ProjectForm({ projectData, editable = true }) {
     fetchCategories();
     fetchDnsAccounts();
     fetchFtpAccounts();
+    fetchGitAccounts();
   }, []);
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
@@ -97,6 +110,7 @@ function ProjectForm({ projectData, editable = true }) {
       let hostingId = values.hosting ? values.hosting : null;
       let dnsAccountId = values.dnsAccount  ? values.dnsAccount : null;
       let ftpAccountId = values.ftpAccount  ? values.ftpAccount : null;
+      let gitAccountId = values.gitAccount  ? values.gitAccount : null;
 
       // Якщо додається новий domainRegistrar
       if (isNewRegistrar && values.newDomainRegistrar) {
@@ -131,6 +145,16 @@ function ProjectForm({ projectData, editable = true }) {
         dnsAccountId = dnsAccountResponse.data._id;
       }
 
+      // Якщо додається новий git
+      if (isNewGitAccount && values.gitAccountLogin) {
+        const gitAccountResponse = await axios.post("/api/gitAccounts", {
+          login: values.gitAccountLogin,
+          password: values.gitAccountPassword,
+          projectCategory: values.projectsCategory,
+        });
+        gitAccountId = gitAccountResponse.data._id;
+      }
+
       if (isNewFtpAccount && values.newFtpAccount) {
         const ftpAccountResponse = await axios.post("/api/ftp", {
           host: values.newFtpAccount,
@@ -149,11 +173,8 @@ function ProjectForm({ projectData, editable = true }) {
           domainRegistrar: registrarId,
           hosting: hostingId,
           dnsAccount: dnsAccountId,
+          gitAccount: gitAccountId,
           ftpAccount: ftpAccountId,
-          github: {
-            login: values.githubLogin,
-            password: values.githubPassword,
-          },
           wpAdmin: {
             login: values.wpAdminLogin,
             password: values.wpAdminPassword,
@@ -174,10 +195,7 @@ function ProjectForm({ projectData, editable = true }) {
           hosting: hostingId,
           dnsAccount: dnsAccountId,
           ftpAccount: ftpAccountId,
-          github: {
-            login: values.githubLogin,
-            password: values.githubPassword,
-          },
+          gitAccount: gitAccountId,
           wpAdmin: {
             login: values.wpAdminLogin,
             password: values.wpAdminPassword,
@@ -977,32 +995,111 @@ function ProjectForm({ projectData, editable = true }) {
 
           <div
             className={`space-y-2 mt-6 pt-4 border-t-2 border-gray-200 ${
-              projectData ? (projectData.github.login ? "" : "hidden") : ""
+              projectData ? (projectData.github ? "" : "hidden") : ""
             }`}
           >
             <h2>GitHub Account</h2>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="relative w-full">
-                <Field
-                  disabled={!editable}
-                  type="text"
-                  name="githubLogin"
-                  placeholder="githubLogin"
-                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                />
-                {!editable && <CopyButton copyValue={values.githubLogin} />}
+            {isNewGitAccount ? (
+              <>
+                <div className="flex  flex-col sm:flex-row gap-4">
+                  
+                  <Field
+                    name="gitAccountLogin"
+                    placeholder="gitAccount Login"
+                    as="input"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
+                  <Field
+                    name="gitAccountPassword"
+                    placeholder="gitAccount Password"
+                    as="input"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                {editable ? (
+                  <Select
+                    styles={selectStyles}
+                    value={findOptionById(gitAccounts, values.gitAccount)}
+                    options={gitAccounts}
+                    onChange={(option) =>
+                      setFieldValue("gitAccount", option.value)
+                    }
+                  />
+                ) : (
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData.gitAccount
+                            ? `${projectData.gitAccount.login}`
+                            : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="gitAccountLoginPlaceholder"
+                        placeholder="gitAccountLogin"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData.gitAccount
+                              ? `${projectData.gitAccount.login}`
+                              : ""
+                          }
+                        />
+                      )}
+                    </div>
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData.gitAccount
+                            ? `${projectData.gitAccount.password}`
+                            : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="gitAccountPasswordPlaceholder"
+                        placeholder="gitAccountPassword"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData.gitAccount
+                              ? `${projectData.gitAccount.password}`
+                              : ""
+                          }
+                        />
+                      )}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {editable && (
+              <div className="flex gap-3 items-center mt-1">
+                <label
+                  htmlFor="gitAccountAcceptConditions"
+                  className="relative h-4 w-8 cursor-pointer rounded-full bg-gray-300 transition [-webkit-tap-highlight-color:_transparent] has-[:checked]:bg-green-500"
+                >
+                  <input
+                    type="checkbox"
+                    id="gitAccountAcceptConditions"
+                    className="peer sr-only"
+                    checked={isNewGitAccount}
+                    onChange={() => setIsNewGitAccount(!isNewGitAccount)}
+                  />
+                  <span className="absolute inset-y-0 start-0 m-1 size-2 rounded-full bg-white transition-all peer-checked:start-4"></span>
+                </label>
+                Add New Git Account
               </div>
-              <div className="relative w-full">
-                <Field
-                  disabled={!editable}
-                  type="text"
-                  name="githubPassword"
-                  placeholder="githubPassword"
-                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                />
-                {!editable && <CopyButton copyValue={values.githubPassword} />}
-              </div>
-            </div>
+            )}
           </div>
 
           <div

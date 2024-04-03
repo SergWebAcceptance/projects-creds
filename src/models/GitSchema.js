@@ -1,12 +1,11 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const DnsAccountSchema = new Schema({
-  name: { type: String, required: false },
+const GitAccountSchema = new Schema({
   login: { type: String, required: false },
   password: { type: String, required: false },
   projectCategory:{ type: Schema.Types.ObjectId, ref: "ProjectsCategory", required: false }
 });
 
 module.exports =
-  mongoose.models.DnsAccount || mongoose.model("DnsAccount", DnsAccountSchema);
+  mongoose.models.GitAccount || mongoose.model("GitAccount", GitAccountSchema);
