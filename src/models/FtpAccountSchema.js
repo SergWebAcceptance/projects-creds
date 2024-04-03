@@ -11,7 +11,9 @@ const FtpAccountSchema = new Schema({
   login: { type: String, required: false },
   password: { type: String, required: false },
   port: { type: Number, required: false },
-  projectCategory:{ type: Schema.Types.ObjectId, ref: "ProjectsCategory", required: true }
+  hostingAccount:{ type: Schema.Types.ObjectId, ref: "Hosting", required: false },
+  hostingAccountName: { type: String, required: false },
+  projectCategory:{ type: Schema.Types.ObjectId, ref: "ProjectsCategory", required: false }
 });
 
 module.exports =

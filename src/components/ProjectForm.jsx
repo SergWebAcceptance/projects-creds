@@ -162,6 +162,8 @@ function ProjectForm({ projectData, editable = true }) {
           login: values.ftpAccountLogin,
           password: values.ftpAccountPassword,
           port: values.ftpAccountPort,
+          hostingAccount: hostingId,
+          hostingAccountName: hostings.find(hosting => hosting.value === hostingId).label,
           projectCategory: values.projectsCategory,
         });
         ftpAccountId = ftpAccountResponse.data._id;
@@ -1104,7 +1106,7 @@ function ProjectForm({ projectData, editable = true }) {
 
           <div
             className={`space-y-2 mt-6 pt-4 border-t-2 border-gray-200 ${
-              projectData ? (projectData.github.login ? "" : "hidden") : ""
+              projectData && projectData.github ? (projectData.github.login ? "" : "hidden") : ""
             }`}
           >
             <h2>Project category</h2>

@@ -24,6 +24,7 @@ function AddFtpAccountForm({ projectData, editable = true }) {
   const router = useRouter();
   const [categories, setCategories] = useState([]);
   const [copied, setCopied] = useState(null);
+  const [hostings, setHostings] = useState([]);
 
   useEffect(() => {
     console.log(projectData);
@@ -38,6 +39,16 @@ function AddFtpAccountForm({ projectData, editable = true }) {
       setCategories(adaptedCategories);
     };
 
+    const fetchHostings = async () => {
+      const response = await axios.get("/api/hostings");
+      const adaptedHostings = response.data.hostings.map((hosting) => ({
+        value: hosting._id,
+        label: `${hosting.name} - ${hosting.login}`,
+      }));
+      setHostings(adaptedHostings);
+    };
+
+    fetchHostings();
     fetchCategories();
   }, []);
 
@@ -50,6 +61,8 @@ function AddFtpAccountForm({ projectData, editable = true }) {
           login: values.login,
           password: values.password,
           port: values.port,
+          hostingAccount: values.hostingAccount,
+          hostingAccountName: hostings.find(hosting => hosting.value === values.hostingAccount).label,
           projectCategory: values.projectCategory,
         });
       } else {
@@ -60,7 +73,9 @@ function AddFtpAccountForm({ projectData, editable = true }) {
           login: values.login,
           password: values.password,
           port: values.port,
+          hostingAccount: values.hostingAccount,
           projectCategory: values.projectCategory,
+          hostingAccountName: hostings.find(hosting => hosting.value === values.hostingAccount).label,
         });
       }
 
@@ -98,6 +113,7 @@ function AddFtpAccountForm({ projectData, editable = true }) {
         login: projectData ? projectData.login : "",
         password: projectData ? projectData.password : "",
         port: projectData ? projectData.port : "",
+        hostingAccount: projectData ? projectData.hostingAccount._id : "",
         projectCategory: projectData ? projectData.projectCategory._id : "",
       }}
       onSubmit={handleSubmit}
@@ -155,6 +171,80 @@ function AddFtpAccountForm({ projectData, editable = true }) {
               />
               {!editable && <CopyButton copyValue={values.port} />}
             </div>
+          </div>
+
+          <div className={`space-y-2`}>
+            <h2>Hosting account</h2>
+          {editable ? (
+                  <Select
+                    styles={selectStyles}
+                    value={findOptionById(hostings, values.hostingAccount)}
+                    options={hostings}
+                    onChange={(option) =>
+                      setFieldValue("hostingAccount", option.value)
+                    }
+                  />
+                ) : (
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData ? projectData.hostingAccount ? `${projectData.hostingAccount.name} ` : "" : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="hostingAccountNamePlaceholder"
+                        placeholder="hostingAccount"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData ? projectData.hostingAccount ? `${projectData.hostingAccount.name} ` : "" : ""
+                          }
+                        />
+                      )}
+                    </div>
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData ? projectData.hostingAccount ? `${projectData.hostingAccount.login} ` : "" : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="hostingAccountLoginPlaceholder"
+                        placeholder="hostingAccount"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData ? projectData.hostingAccount ? `${projectData.hostingAccount.login} ` : "" : ""
+                          }
+                        />
+                      )}
+                    </div>
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData ? projectData.hostingAccount ? `${projectData.hostingAccount.password} ` : "" : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="hostingAccountPasswordPlaceholder"
+                        placeholder="hostingAccount"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData ? projectData.hostingAccount ? `${projectData.hostingAccount.password} ` : "" : ""
+                          }
+                        />
+                      )}
+                    </div>
+                  </div>
+                )}
           </div>
 
           <div className={`space-y-2`}>
