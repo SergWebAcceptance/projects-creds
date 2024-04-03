@@ -21,7 +21,7 @@ const ProjectSchema = new Schema({
     ref: "DomainRegistrar",
     required: true,
   },
-  hosting: { type: Schema.Types.ObjectId, ref: "Hosting", required: true },
+  hosting: { type: Schema.Types.ObjectId, ref: "Hosting", required: false },
   dnsAccount: {
     type: Schema.Types.ObjectId,
     ref: "DnsAccount",

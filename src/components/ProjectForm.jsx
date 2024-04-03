@@ -93,10 +93,10 @@ function ProjectForm({ projectData, editable = true }) {
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      let registrarId = values.domainRegistrar;
-      let hostingId = values.hosting;
-      let dnsAccountId = values.dnsAccount;
-      let ftpAccountId = values.ftpAccount;
+      let registrarId = values.domainRegistrar  ? values.domainRegistrar : null;
+      let hostingId = values.hosting ? values.hosting : null;
+      let dnsAccountId = values.dnsAccount  ? values.dnsAccount : null;
+      let ftpAccountId = values.ftpAccount  ? values.ftpAccount : null;
 
       // Якщо додається новий domainRegistrar
       if (isNewRegistrar && values.newDomainRegistrar) {
@@ -222,7 +222,11 @@ function ProjectForm({ projectData, editable = true }) {
         newDomainRegistrar: "",
         registrarLogin: "", // Для логіна нового domainRegistrar
         registrarPassword: "", // Для пароля нового domainRegistrar
-        hosting: projectData ? projectData.hosting._id : "",
+        hosting: projectData
+        ? projectData.hosting
+          ? projectData.hosting._id
+          : ""
+        : "",
         newHosting: "",
         hostingLogin: "",
         hostingPassword: "",
@@ -485,7 +489,7 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData ? `${projectData.hosting.name} ` : ""
+                          projectData ? projectData.hosting ? `${projectData.hosting.name} ` : "" : ""
                         }
                         disabled={!editable}
                         type="text"
@@ -496,7 +500,7 @@ function ProjectForm({ projectData, editable = true }) {
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData ? `${projectData.hosting.name} ` : ""
+                            projectData ? projectData.hosting ? `${projectData.hosting.name} ` : "" : ""
                           }
                         />
                       )}
@@ -504,7 +508,7 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData ? `${projectData.hosting.login}` : ""
+                          projectData ? projectData.hosting ? `${projectData.hosting.login} ` : "" : ""
                         }
                         disabled={!editable}
                         type="text"
@@ -515,7 +519,7 @@ function ProjectForm({ projectData, editable = true }) {
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData ? `${projectData.hosting.login}` : ""
+                            projectData ? projectData.hosting ? `${projectData.hosting.login} ` : "" : ""
                           }
                         />
                       )}
@@ -523,7 +527,7 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData ? `${projectData.hosting.password}` : ""
+                          projectData ? projectData.hosting ? `${projectData.hosting.password} ` : "" : ""
                         }
                         disabled={!editable}
                         type="text"
@@ -534,7 +538,7 @@ function ProjectForm({ projectData, editable = true }) {
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData ? `${projectData.hosting.password}` : ""
+                            projectData ? projectData.hosting ? `${projectData.hosting.password} ` : "" : ""
                           }
                         />
                       )}

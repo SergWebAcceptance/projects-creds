@@ -27,15 +27,31 @@ export async function POST(req) {
       testAccess,
     } = await req.json();
 
-    // Перевірте, чи існують domainRegistrar і hosting по ID
-    const existingRegistrar = await DomainRegistrar.findById(domainRegistrar);
-    const existingHosting = await Hosting.findById(hosting);
-    const existingDNSAccount = await DnsAccount.findById(dnsAccount);
-    const existingFTPAccount = await FtpAccount.findById(ftpAccount);
-
-    if (!existingRegistrar || !existingHosting || !existingDNSAccount || !existingFTPAccount) {
-      throw new Error("Domain Registrar or Hosting not found");
+    if(domainRegistrar){
+      const existingRegistrar = await DomainRegistrar.findById(domainRegistrar);
+      if (!existingRegistrar) {
+        throw new Error("Domain Registrar not found");
+      }
     }
+    if(hosting){
+      const existingHosting = await Hosting.findById(hosting);
+      if (!existingHosting) {
+        throw new Error("Hosting Account not found");
+      }
+    }
+    if(dnsAccount){
+      const existingDNSAccount = await DnsAccount.findById(dnsAccount);
+      if (!existingDNSAccount) {
+        throw new Error("DNS Account not found");
+      }
+    }
+    if(ftpAccount){
+      const existingFTPAccount = await FtpAccount.findById(ftpAccount);
+      if (!existingFTPAccount) {
+        throw new Error("FTP Account not found");
+      }
+    }
+    
 
     const newProject = await Project.create({
       domain,
@@ -80,14 +96,38 @@ export async function PATCH(req) {
       testAccess,
     } = await req.json();
 
-    const existingRegistrar = await DomainRegistrar.findById(domainRegistrar);
-    const existingHosting = await Hosting.findById(hosting);
-    const existingDNSAccount = await DnsAccount.findById(dnsAccount);
-    const existingFTPAccount = await FtpAccount.findById(ftpAccount);
+    
+
+    if(domainRegistrar){
+      const existingRegistrar = await DomainRegistrar.findById(domainRegistrar);
+      if (!existingRegistrar) {
+        throw new Error("Domain Registrar not found");
+      }
+    }
+    if(hosting){
+      const existingHosting = await Hosting.findById(hosting);
+      if (!existingHosting) {
+        throw new Error("Hosting Account not found");
+      }
+    }
+    if(dnsAccount){
+      const existingDNSAccount = await DnsAccount.findById(dnsAccount);
+      if (!existingDNSAccount) {
+        throw new Error("DNS Account not found");
+      }
+    }
+    if(ftpAccount){
+      const existingFTPAccount = await FtpAccount.findById(ftpAccount);
+      if (!existingFTPAccount) {
+        throw new Error("FTP Account not found");
+      }
+    }
 
     if (!existingRegistrar || !existingHosting || !existingDNSAccount || !existingFTPAccount) {
       throw new Error("Domain Registrar or Hosting not found");
     }
+
+  
 
     const newProject = await Project.updateOne(
       { _id: projectId },
