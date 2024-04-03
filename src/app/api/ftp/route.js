@@ -3,6 +3,7 @@ import FtpAccount from "@/models/FtpAccountSchema";
 import { NextResponse } from "next/server";
 import ProjectsCategory from "@/models/ProjectsCategory";
 import Hosting from "@/models/HostingSchema";
+import { encryptText, decryptText } from "@/lib/cryptoUtils";
 
 export async function POST(req) {
   await dbConnect();
@@ -22,12 +23,14 @@ export async function POST(req) {
     let ftpAccount = await FtpAccount.findOne({ host, login });
 
     if (!ftpAccount) {
-      // Якщо не знайдено, створюємо новий
+      const encryptedHost = encryptText(host);
+      const encryptedLogin = encryptText(login);
+      const encryptedPassword = encryptText(password);
       ftpAccount = await FtpAccount.create({
         protocol,
-        host,
-        login,
-        password,
+        host: encryptedHost,
+        login: encryptedLogin,
+        password: encryptedPassword,
         port,
         hostingAccount,
         hostingAccountName,
@@ -61,14 +64,17 @@ export async function PATCH(req) {
       projectCategory,
     } = await req.json();
 
+    const encryptedHost = encryptText(host);
+    const encryptedLogin = encryptText(login);
+    const encryptedPassword = encryptText(password);
     const newFtpAccount = await FtpAccount.updateOne(
       { _id: ftpAccountId }, // Умова, за якою знаходиться документ. Наприклад, за ID.
       {
         $set: {
           protocol,
-          host,
-          login,
-          password,
+          host: encryptedHost,
+          login: encryptedLogin,
+          password: encryptedPassword,
           port,
           hostingAccount,
           hostingAccountName,
@@ -107,6 +113,14 @@ export async function GET(req, res) {
           { message: "Project not found" },
           { status: 404 }
         );
+      } else {
+        ftpAccount.host = decryptText(ftpAccount.host);
+        ftpAccount.login = decryptText(ftpAccount.login);
+        ftpAccount.password = decryptText(ftpAccount.password);
+        if (ftpAccount.hostingAccount) {
+          ftpAccount.hostingAccount.login = decryptText(ftpAccount.hostingAccount.login);
+          ftpAccount.hostingAccount.password = decryptText(ftpAccount.hostingAccount.password);
+        }
       }
       return NextResponse.json({ ftpAccount }, { status: 200 });
     } else if (category) {
@@ -143,7 +157,7 @@ export async function GET(req, res) {
 
       const total = totalFtpAccounts.length > 0 ? totalFtpAccounts.length : 0;
 
-      const ftpAccounts = await FtpAccount.aggregate([
+      let ftpAccounts = await FtpAccount.aggregate([
         {
           $lookup: {
             from: "projectscategories", // the collection to join
@@ -176,7 +190,12 @@ export async function GET(req, res) {
         { $limit: limit },
       ]);
 
-      
+      ftpAccounts = ftpAccounts.map((ftpAccount) => ({
+        ...ftpAccount,
+        host: decryptText(ftpAccount.host),
+        login: decryptText(ftpAccount.login),
+        password: decryptText(ftpAccount.password),
+      }));
 
       if (search) {
         return NextResponse.json(
@@ -191,9 +210,17 @@ export async function GET(req, res) {
       }
     } else {
       // Якщо slug не передано, завантажуємо всі проекти
-      const ftpAccounts = await FtpAccount.find({})
+      let ftpAccounts = await FtpAccount.find({})
         .populate("projectCategory")
         .populate("hostingAccount");
+
+      ftpAccounts = ftpAccounts.map((ftpAccount) => ({
+        ...ftpAccount.toObject(),
+        host: decryptText(ftpAccount.host),
+        login: decryptText(ftpAccount.login),
+        password: decryptText(ftpAccount.password),
+        
+      }));
 
       return NextResponse.json({ ftpAccounts }, { status: 200 });
     }

@@ -133,6 +133,7 @@ function AddFtpAccountForm({ projectData, editable = true }) {
             </div>
             <div className="w-full space-y-2 relative">
               <Select
+              value={findOptionById(ftpProtocolOptions, values.protocol)}
                styles={selectStyles}
                 options={ftpProtocolOptions}
                 onChange={(option) =>

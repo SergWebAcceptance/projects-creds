@@ -78,10 +78,12 @@ function ProjectForm({ projectData, editable = true }) {
 
     const fetchGitAccounts = async () => {
       const response = await axios.get("/api/gitAccounts");
-      const adaptedGitAccounts = response.data.gitAccounts.map((gitAccount) => ({
-        value: gitAccount._id,
-        label: `${gitAccount.login}`,
-      }));
+      const adaptedGitAccounts = response.data.gitAccounts.map(
+        (gitAccount) => ({
+          value: gitAccount._id,
+          label: `${gitAccount.login}`,
+        })
+      );
       console.log(adaptedGitAccounts);
       setGitAccounts(adaptedGitAccounts);
     };
@@ -106,11 +108,11 @@ function ProjectForm({ projectData, editable = true }) {
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      let registrarId = values.domainRegistrar  ? values.domainRegistrar : null;
+      let registrarId = values.domainRegistrar ? values.domainRegistrar : null;
       let hostingId = values.hosting ? values.hosting : null;
-      let dnsAccountId = values.dnsAccount  ? values.dnsAccount : null;
-      let ftpAccountId = values.ftpAccount  ? values.ftpAccount : null;
-      let gitAccountId = values.gitAccount  ? values.gitAccount : null;
+      let dnsAccountId = values.dnsAccount ? values.dnsAccount : null;
+      let ftpAccountId = values.ftpAccount ? values.ftpAccount : null;
+      let gitAccountId = values.gitAccount ? values.gitAccount : null;
 
       // Якщо додається новий domainRegistrar
       if (isNewRegistrar && values.newDomainRegistrar) {
@@ -156,6 +158,12 @@ function ProjectForm({ projectData, editable = true }) {
       }
 
       if (isNewFtpAccount && values.newFtpAccount) {
+        const hostingAccountNameValue = hostings.find(
+          (hosting) => hosting.value === hostingId
+        )
+          ? hostings.find((hosting) => hosting.value === hostingId).label
+          : values.newHosting ? `${values.newHosting} - ${values.hostingLogin}` : "";
+
         const ftpAccountResponse = await axios.post("/api/ftp", {
           host: values.newFtpAccount,
           protocol: values.ftpAccountProtocol,
@@ -163,7 +171,7 @@ function ProjectForm({ projectData, editable = true }) {
           password: values.ftpAccountPassword,
           port: values.ftpAccountPort,
           hostingAccount: hostingId,
-          hostingAccountName: hostings.find(hosting => hosting.value === hostingId).label,
+          hostingAccountName: hostingAccountNameValue,
           projectCategory: values.projectsCategory,
         });
         ftpAccountId = ftpAccountResponse.data._id;
@@ -238,15 +246,19 @@ function ProjectForm({ projectData, editable = true }) {
     <Formik
       initialValues={{
         domain: projectData ? projectData.domain : "",
-        domainRegistrar: projectData ? projectData.domainRegistrar._id : "",
+        domainRegistrar: projectData
+          ? projectData.domainRegistrar
+            ? projectData.domainRegistrar._id
+            : ""
+          : "",
         newDomainRegistrar: "",
         registrarLogin: "", // Для логіна нового domainRegistrar
         registrarPassword: "", // Для пароля нового domainRegistrar
         hosting: projectData
-        ? projectData.hosting
-          ? projectData.hosting._id
-          : ""
-        : "",
+          ? projectData.hosting
+            ? projectData.hosting._id
+            : ""
+          : "",
         newHosting: "",
         hostingLogin: "",
         hostingPassword: "",
@@ -377,20 +389,20 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData
+                          projectData && projectData.domainRegistrar
                             ? `${projectData.domainRegistrar.name} `
                             : ""
                         }
                         disabled={!editable}
                         type="text"
-                        name="domainRegistrarNamePlaceholder"
-                        placeholder="hosting"
+                        name="domainRegistrarName"
+                        placeholder="domainRegistrarName"
                         className="w-full rounded-lg border-gray-200 p-3 text-sm border"
                       />
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData
+                            projectData && projectData.domainRegistrar
                               ? `${projectData.domainRegistrar.name} `
                               : ""
                           }
@@ -400,20 +412,20 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData
+                          projectData && projectData.domainRegistrar
                             ? `${projectData.domainRegistrar.login}`
                             : ""
                         }
                         disabled={!editable}
                         type="text"
-                        name="domainRegistrarLoginPlaceholder"
-                        placeholder="hosting"
+                        name="domainRegistrarLogin"
+                        placeholder="domainRegistrarLogin"
                         className="w-full rounded-lg border-gray-200 p-3 text-sm border"
                       />
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData
+                            projectData && projectData.domainRegistrar
                               ? `${projectData.domainRegistrar.login}`
                               : ""
                           }
@@ -423,20 +435,20 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData
+                          projectData && projectData.domainRegistrar
                             ? `${projectData.domainRegistrar.password}`
                             : ""
                         }
                         disabled={!editable}
                         type="text"
-                        name="domainRegistrarPasswordPlaceholder"
-                        placeholder="hosting"
+                        name="domainRegistrarPassword"
+                        placeholder="domainRegistrarPassword"
                         className="w-full rounded-lg border-gray-200 p-3 text-sm border"
                       />
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData
+                            projectData && projectData.domainRegistrar
                               ? `${projectData.domainRegistrar.password}`
                               : ""
                           }
@@ -509,7 +521,11 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData ? projectData.hosting ? `${projectData.hosting.name} ` : "" : ""
+                          projectData
+                            ? projectData.hosting
+                              ? `${projectData.hosting.name} `
+                              : ""
+                            : ""
                         }
                         disabled={!editable}
                         type="text"
@@ -520,7 +536,11 @@ function ProjectForm({ projectData, editable = true }) {
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData ? projectData.hosting ? `${projectData.hosting.name} ` : "" : ""
+                            projectData
+                              ? projectData.hosting
+                                ? `${projectData.hosting.name} `
+                                : ""
+                              : ""
                           }
                         />
                       )}
@@ -528,7 +548,11 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData ? projectData.hosting ? `${projectData.hosting.login} ` : "" : ""
+                          projectData
+                            ? projectData.hosting
+                              ? `${projectData.hosting.login} `
+                              : ""
+                            : ""
                         }
                         disabled={!editable}
                         type="text"
@@ -539,7 +563,11 @@ function ProjectForm({ projectData, editable = true }) {
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData ? projectData.hosting ? `${projectData.hosting.login} ` : "" : ""
+                            projectData
+                              ? projectData.hosting
+                                ? `${projectData.hosting.login} `
+                                : ""
+                              : ""
                           }
                         />
                       )}
@@ -547,7 +575,11 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData ? projectData.hosting ? `${projectData.hosting.password} ` : "" : ""
+                          projectData
+                            ? projectData.hosting
+                              ? `${projectData.hosting.password} `
+                              : ""
+                            : ""
                         }
                         disabled={!editable}
                         type="text"
@@ -558,7 +590,11 @@ function ProjectForm({ projectData, editable = true }) {
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData ? projectData.hosting ? `${projectData.hosting.password} ` : "" : ""
+                            projectData
+                              ? projectData.hosting
+                                ? `${projectData.hosting.password} `
+                                : ""
+                              : ""
                           }
                         />
                       )}
@@ -1004,7 +1040,6 @@ function ProjectForm({ projectData, editable = true }) {
             {isNewGitAccount ? (
               <>
                 <div className="flex  flex-col sm:flex-row gap-4">
-                  
                   <Field
                     name="gitAccountLogin"
                     placeholder="gitAccount Login"
@@ -1032,7 +1067,6 @@ function ProjectForm({ projectData, editable = true }) {
                   />
                 ) : (
                   <div className="flex flex-col sm:flex-row gap-4">
-                    
                     <div className="relative w-full">
                       <Field
                         value={
@@ -1106,7 +1140,11 @@ function ProjectForm({ projectData, editable = true }) {
 
           <div
             className={`space-y-2 mt-6 pt-4 border-t-2 border-gray-200 ${
-              projectData && projectData.github ? (projectData.github.login ? "" : "hidden") : ""
+              projectData && projectData.github
+                ? projectData.github.login
+                  ? ""
+                  : "hidden"
+                : ""
             }`}
           >
             <h2>Project category</h2>

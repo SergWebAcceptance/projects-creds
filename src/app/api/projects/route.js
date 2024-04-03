@@ -7,6 +7,7 @@ import { NextResponse } from "next/server";
 import DnsAccount from "@/models/DnsSchema";
 import FtpAccount from "@/models/FtpAccountSchema";
 import GitAccount from "@/models/GitSchema";
+import { encryptText, decryptText } from "@/lib/cryptoUtils";
 
 export async function POST(req) {
   try {
@@ -23,35 +24,39 @@ export async function POST(req) {
       registerDate,
       expiredDate,
       projectsCategory,
-      ftpSsh,
       testAccess,
     } = await req.json();
 
-    if(domainRegistrar){
+    if (domainRegistrar) {
       const existingRegistrar = await DomainRegistrar.findById(domainRegistrar);
       if (!existingRegistrar) {
         throw new Error("Domain Registrar not found");
       }
     }
-    if(hosting){
+    if (hosting) {
       const existingHosting = await Hosting.findById(hosting);
       if (!existingHosting) {
         throw new Error("Hosting Account not found");
       }
     }
-    if(dnsAccount){
+    if (dnsAccount) {
       const existingDNSAccount = await DnsAccount.findById(dnsAccount);
       if (!existingDNSAccount) {
         throw new Error("DNS Account not found");
       }
     }
-    if(ftpAccount){
+    if (ftpAccount) {
       const existingFTPAccount = await FtpAccount.findById(ftpAccount);
       if (!existingFTPAccount) {
         throw new Error("FTP Account not found");
       }
     }
-    
+
+    const encryptedWpLogin = encryptText(wpAdmin.login);
+    const encryptedWpPassword = encryptText(wpAdmin.password);
+
+    const encryptedTestLogin = encryptText(wpAdmin.login);
+    const encryptedTestPassword = encryptText(wpAdmin.password);
 
     const newProject = await Project.create({
       domain,
@@ -60,12 +65,17 @@ export async function POST(req) {
       dnsAccount,
       gitAccount,
       ftpAccount,
-      wpAdmin,
+      wpAdmin: {
+        login: wpAdmin.login ? encryptedWpLogin : "",
+        password: wpAdmin.password ? encryptedWpPassword : "",
+      },
       registerDate,
       expiredDate,
       projectsCategory,
-      ftpSsh,
-      testAccess,
+      testAccess: {
+        login: testAccess.login ? encryptedTestLogin : "",
+        password: testAccess.password ? encryptedTestPassword : "",
+      },
     });
 
     return new Response(JSON.stringify(newProject), { status: 201 });
@@ -92,39 +102,39 @@ export async function PATCH(req) {
       registerDate,
       expiredDate,
       projectsCategory,
-      ftpSsh,
       testAccess,
     } = await req.json();
 
-    
-
-    if(domainRegistrar){
+    if (domainRegistrar) {
       const existingRegistrar = await DomainRegistrar.findById(domainRegistrar);
       if (!existingRegistrar) {
         throw new Error("Domain Registrar not found");
       }
     }
-    if(hosting){
+    if (hosting) {
       const existingHosting = await Hosting.findById(hosting);
       if (!existingHosting) {
         throw new Error("Hosting Account not found");
       }
     }
-    if(dnsAccount){
+    if (dnsAccount) {
       const existingDNSAccount = await DnsAccount.findById(dnsAccount);
       if (!existingDNSAccount) {
         throw new Error("DNS Account not found");
       }
     }
-    if(ftpAccount){
+    if (ftpAccount) {
       const existingFTPAccount = await FtpAccount.findById(ftpAccount);
       if (!existingFTPAccount) {
         throw new Error("FTP Account not found");
       }
     }
 
+    const encryptedWpLogin = encryptText(wpAdmin.login);
+    const encryptedWpPassword = encryptText(wpAdmin.password);
 
-  
+    const encryptedTestLogin = encryptText(wpAdmin.login);
+    const encryptedTestPassword = encryptText(wpAdmin.password);
 
     const newProject = await Project.updateOne(
       { _id: projectId },
@@ -136,12 +146,17 @@ export async function PATCH(req) {
           dnsAccount,
           ftpAccount,
           gitAccount,
-          wpAdmin,
+          wpAdmin: {
+            login: wpAdmin.login ? encryptedWpLogin : "",
+            password: wpAdmin.password ? encryptedWpPassword : "",
+          },
           registerDate,
           expiredDate,
           projectsCategory,
-          ftpSsh,
-          testAccess,
+          testAccess: {
+            login: testAccess.login ? encryptedTestLogin : "",
+            password: testAccess.password ? encryptedTestPassword : "",
+          },
         },
       }
     );
@@ -179,6 +194,50 @@ export async function GET(req, res) {
           { message: "Project not found" },
           { status: 404 }
         );
+      } else {
+        if (project.hosting) {
+          project.hosting.login = decryptText(project.hosting.login);
+          project.hosting.password = decryptText(project.hosting.password);
+        }
+        if (project.domainRegistrar) {
+          project.domainRegistrar.login = decryptText(
+            project.domainRegistrar.login
+          );
+          project.domainRegistrar.password = decryptText(
+            project.domainRegistrar.password
+          );
+        }
+        if (project.dnsAccount) {
+          project.dnsAccount.login = decryptText(project.dnsAccount.login);
+          project.dnsAccount.password = decryptText(
+            project.dnsAccount.password
+          );
+        }
+        if (project.gitAccount) {
+          project.gitAccount.login = decryptText(project.gitAccount.login);
+          project.gitAccount.password = decryptText(
+            project.gitAccount.password
+          );
+        }
+        if (project.ftpAccount) {
+          project.ftpAccount.host = decryptText(project.ftpAccount.host);
+          project.ftpAccount.login = decryptText(project.ftpAccount.login);
+          project.ftpAccount.password = decryptText(
+            project.ftpAccount.password
+          );
+        }
+        if (project.wpAdmin) {
+          project.wpAdmin.login = decryptText(project.wpAdmin.login);
+          project.wpAdmin.password = decryptText(
+            project.wpAdmin.password
+          );
+        }
+        if (project.testAccess) {
+          project.testAccess.login = decryptText(project.testAccess.login);
+          project.testAccess.password = decryptText(
+            project.testAccess.password
+          );
+        }
       }
       return NextResponse.json({ project }, { status: 200 });
     } else if (category) {
@@ -204,7 +263,7 @@ export async function GET(req, res) {
         },
         {
           $match: matchStage,
-        }
+        },
       ]);
 
       const total = totalProjects.length > 0 ? totalProjects.length : 0;

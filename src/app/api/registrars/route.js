@@ -2,6 +2,7 @@ import dbConnect from "@/lib/db";
 import DomainRegistrar from "@/models/DomainRegistrar";
 import { NextResponse } from "next/server";
 import ProjectsCategory from "@/models/ProjectsCategory";
+import { encryptText, decryptText } from "@/lib/cryptoUtils";
 
 export async function POST(req) {
     await dbConnect();
@@ -12,8 +13,9 @@ export async function POST(req) {
         let registrar = await DomainRegistrar.findOne({ name, login });
 
         if (!registrar) {
-            // Якщо не знайдено, створюємо новий
-            registrar = await DomainRegistrar.create({ name, login, password, projectCategory });
+            const encryptedLogin = encryptText(login);
+            const encryptedPassword = encryptText(password);
+            registrar = await DomainRegistrar.create({ name, login: encryptedLogin, password: encryptedPassword, projectCategory });
             return new Response(JSON.stringify(registrar), {status: 201});
         } else {
             // Якщо знайдено, повертаємо існуючий
@@ -30,14 +32,15 @@ export async function PATCH(req) {
   
       const { domainRegistrarId, name, login, password, projectCategory } =
         await req.json();
-  
+      const encryptedLogin = encryptText(login);
+      const encryptedPassword = encryptText(password);
       const newDomainRegistrar = await DomainRegistrar.updateOne(
         { _id: domainRegistrarId }, // Умова, за якою знаходиться документ. Наприклад, за ID.
         {
           $set: {
             name,
-            login,
-            password,
+            login: encryptedLogin,
+            password: encryptedPassword,
             projectCategory,
           },
         }
@@ -67,13 +70,19 @@ export async function PATCH(req) {
           const registrar = await DomainRegistrar.findOne({ _id: id }).populate(
             "projectCategory"
           );
+          
     
           if (!registrar) {
             return NextResponse.json(
               { message: "Project not found" },
               { status: 404 }
             );
+          } else {
+            // Decrypt login and password here
+            registrar.login = decryptText(registrar.login);
+            registrar.password = decryptText(registrar.password);
           }
+          
           return NextResponse.json({ registrar }, { status: 200 });
         } else if (category) {
           let matchStage = {};
@@ -108,7 +117,7 @@ export async function PATCH(req) {
     
           const total = totalDomainRegistrars.length > 0 ? totalDomainRegistrars.length : 0;
     
-          const registrars = await DomainRegistrar.aggregate([
+          let registrars = await DomainRegistrar.aggregate([
             {
               $lookup: {
                 from: "projectscategories", // the collection to join
@@ -126,6 +135,12 @@ export async function PATCH(req) {
             { $skip: skip },
             { $limit: limit },
           ]);
+
+          registrars = registrars.map(registrar => ({
+            ...registrar,
+            login: decryptText(registrar.login),
+            password: decryptText(registrar.password),
+          }));
     
           if(search) {
             return NextResponse.json({ registrars: totalDomainRegistrars, total, page, limit }, { status: 200 });
@@ -134,7 +149,13 @@ export async function PATCH(req) {
           }
         } else {
           // Якщо slug не передано, завантажуємо всі проекти
-          const registrars = await DomainRegistrar.find({}).populate("projectCategory");
+          let registrars = await DomainRegistrar.find({}).populate("projectCategory");
+
+          registrars = registrars.map(registrar => ({
+            ...registrar.toObject(),
+            login: decryptText(registrar.login),
+            password: decryptText(registrar.password),
+          }));
     
           return NextResponse.json({ registrars }, { status: 200 });
         }

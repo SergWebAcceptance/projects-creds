@@ -2,6 +2,7 @@ import dbConnect from "@/lib/db";
 import EmailAccounts from "@/models/EmailAccounts";
 import { NextResponse } from "next/server";
 import ProjectsCategory from "@/models/ProjectsCategory";
+import { encryptText, decryptText } from "@/lib/cryptoUtils";
 
 export async function POST(req) {
   await dbConnect();
@@ -12,10 +13,11 @@ export async function POST(req) {
     let newEmail = await EmailAccounts.findOne({ email });
 
     if (!newEmail) {
-      // Якщо не знайдено, створюємо новий
+      const encryptedEmail = encryptText(email);
+      const encryptedPassword = encryptText(password);
       newEmail = await EmailAccounts.create({
-        email,
-        password,
+        email: encryptedEmail,
+        password: encryptedPassword,
         aliases,
         emailCategory,
       });
@@ -37,13 +39,14 @@ export async function PATCH(req) {
 
     const { emailId, email, password, aliases, projectsCategory } =
       await req.json();
-
+    const encryptedEmail = encryptText(email);
+    const encryptedPassword = encryptText(password);
     const newEmail = await EmailAccounts.updateOne(
       { _id: emailId }, // Умова, за якою знаходиться документ. Наприклад, за ID.
       {
         $set: {
-          email,
-          password,
+          email: encryptedEmail,
+          password: encryptedPassword,
           aliases,
           projectsCategory,
         },
@@ -80,6 +83,10 @@ export async function GET(req, res) {
           { message: "Project not found" },
           { status: 404 }
         );
+      } else {
+        // Decrypt login and password here
+        email.email = decryptText(email.email);
+        email.password = decryptText(email.password);
       }
       return NextResponse.json({ email }, { status: 200 });
     } else if (category) {
@@ -115,7 +122,7 @@ export async function GET(req, res) {
 
       const total = totalEmails.length > 0 ? totalEmails.length : 0;
 
-      const emails = await EmailAccounts.aggregate([
+      let emails = await EmailAccounts.aggregate([
         {
           $lookup: {
             from: "projectscategories", // the collection to join
@@ -134,6 +141,12 @@ export async function GET(req, res) {
         { $limit: limit },
       ]);
 
+      emails = emails.map(email => ({
+        ...email,
+        email: decryptText(email.email),
+        password: decryptText(email.password),
+      }));
+
       if(search) {
         return NextResponse.json({ emails: totalEmails, total, page, limit }, { status: 200 });
       } else {
@@ -141,8 +154,12 @@ export async function GET(req, res) {
       }
     } else {
       // Якщо slug не передано, завантажуємо всі проекти
-      const emails = await EmailAccounts.find({}).populate("emailCategory");
-
+      let emails = await EmailAccounts.find({}).populate("emailCategory");
+      emails = emails.map(email => ({
+        ...email,
+        email: decryptText(email.email),
+        password: decryptText(email.password),
+      }));
       return NextResponse.json({ emails }, { status: 200 });
     }
   } catch (error) {
