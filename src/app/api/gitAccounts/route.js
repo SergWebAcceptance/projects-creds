@@ -81,11 +81,8 @@ export async function PATCH(req) {
             matchStage["projectCategory.name"] = category;
           }
     
-          // Додавання умови пошуку за доменом, якщо search присутній
           if (search) {
-            matchStage["$or"] = [
-              { login: { $regex: search, $options: "i" } }, // Додавання пошуку по полю aliases
-            ];
+            matchStage["login"] = { $regex: search, $options: "i" };
           }
     
           const totalGitAccounts = await GitAccount.aggregate([
