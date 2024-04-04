@@ -118,8 +118,12 @@ export async function GET(req, res) {
         ftpAccount.login = decryptText(ftpAccount.login);
         ftpAccount.password = decryptText(ftpAccount.password);
         if (ftpAccount.hostingAccount) {
-          ftpAccount.hostingAccount.login = decryptText(ftpAccount.hostingAccount.login);
-          ftpAccount.hostingAccount.password = decryptText(ftpAccount.hostingAccount.password);
+          ftpAccount.hostingAccount.login = decryptText(
+            ftpAccount.hostingAccount.login
+          );
+          ftpAccount.hostingAccount.password = decryptText(
+            ftpAccount.hostingAccount.password
+          );
         }
       }
       return NextResponse.json({ ftpAccount }, { status: 200 });
@@ -130,13 +134,13 @@ export async function GET(req, res) {
       }
 
       // Додавання умови пошуку за доменом, якщо search присутній
-      if (search) {
+      /*if (search) {
         matchStage["$or"] = [
           { host: { $regex: search, $options: "i" } },
           { login: { $regex: search, $options: "i" } },
           { hostingAccountName: { $regex: search, $options: "i" } },
         ];
-      }
+      }*/
 
       let totalFtpAccounts = await FtpAccount.aggregate([
         {
@@ -198,12 +202,21 @@ export async function GET(req, res) {
       }));
 
       if (search) {
-        totalFtpAccounts = totalFtpAccounts.map((ftpAccount) => ({
-          ...ftpAccount,
-          host: decryptText(ftpAccount.host),
-          login: decryptText(ftpAccount.login),
-          password: decryptText(ftpAccount.password),
-        }));
+        const searchLower = search.toLowerCase();
+        totalFtpAccounts = totalFtpAccounts
+          .map((ftpAccount) => ({
+            ...ftpAccount,
+            host: decryptText(ftpAccount.host),
+            login: decryptText(ftpAccount.login),
+            password: decryptText(ftpAccount.password),
+          }))
+          .filter((hosting) => {
+            return (
+              hosting.host.toLowerCase().includes(searchLower) ||
+              hosting.login.toLowerCase().includes(searchLower) ||
+              hosting.hostingAccountName.toLowerCase().includes(searchLower)
+            );
+          });
         return NextResponse.json(
           { ftpAccounts: totalFtpAccounts, total, page, limit },
           { status: 200 }
@@ -225,7 +238,6 @@ export async function GET(req, res) {
         host: decryptText(ftpAccount.host),
         login: decryptText(ftpAccount.login),
         password: decryptText(ftpAccount.password),
-        
       }));
 
       return NextResponse.json({ ftpAccounts }, { status: 200 });
