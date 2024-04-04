@@ -36,14 +36,16 @@ function AddDomainRegisterForm({ projectData, editable = true }) {
           name: values.name,
           login: values.login,
           password: values.password,
+          card: values.card,
           projectCategory: values.projectCategory
         });
       } else {
         await axios.patch("/api/registrars", {
-          hostingId: projectData._id,
+          domainRegistrarId: projectData._id,
           name: values.name,
           login: values.login,
           password: values.password,
+          card: values.card,
           projectCategory: values.projectCategory
         });
       }
@@ -80,6 +82,7 @@ function AddDomainRegisterForm({ projectData, editable = true }) {
         name: projectData ? projectData.name : "",
         login: projectData ? projectData.login : "",
         password: projectData ? projectData.password : "",
+        card: projectData ? projectData.card : "",
         projectCategory: projectData ? projectData.projectCategory._id : "",
       }}
       onSubmit={handleSubmit}
@@ -116,6 +119,16 @@ function AddDomainRegisterForm({ projectData, editable = true }) {
                 disabled={!editable}
               />
               {!editable && <CopyButton copyValue={values.password} />}
+            </div>
+            <div className="w-full space-y-2 relative">
+              <Field
+                type="text"
+                name="card"
+                placeholder="card"
+                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                disabled={!editable}
+              />
+              {!editable && <CopyButton copyValue={values.card} />}
             </div>
           </div>
 

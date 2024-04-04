@@ -120,6 +120,7 @@ function ProjectForm({ projectData, editable = true }) {
           name: values.newDomainRegistrar,
           login: values.registrarLogin,
           password: values.registrarPassword,
+          card: values.registrarCard,
           projectCategory: values.projectsCategory,
         });
         registrarId = registrarResponse.data._id;
@@ -131,6 +132,7 @@ function ProjectForm({ projectData, editable = true }) {
           name: values.newHosting,
           login: values.hostingLogin,
           password: values.hostingPassword,
+          card: values.hostingCard,
           projectCategory: values.projectsCategory,
         });
         hostingId = hostingResponse.data._id;
@@ -162,7 +164,9 @@ function ProjectForm({ projectData, editable = true }) {
           (hosting) => hosting.value === hostingId
         )
           ? hostings.find((hosting) => hosting.value === hostingId).label
-          : values.newHosting ? `${values.newHosting} - ${values.hostingLogin}` : "";
+          : values.newHosting
+          ? `${values.newHosting} - ${values.hostingLogin}`
+          : "";
 
         const ftpAccountResponse = await axios.post("/api/ftp", {
           host: values.newFtpAccount,
@@ -253,7 +257,8 @@ function ProjectForm({ projectData, editable = true }) {
           : "",
         newDomainRegistrar: "",
         registrarLogin: "", // Для логіна нового domainRegistrar
-        registrarPassword: "", // Для пароля нового domainRegistrar
+        registrarPassword: "",
+        egistrarCard: "",
         hosting: projectData
           ? projectData.hosting
             ? projectData.hosting._id
@@ -262,6 +267,7 @@ function ProjectForm({ projectData, editable = true }) {
         newHosting: "",
         hostingLogin: "",
         hostingPassword: "",
+        hostingCard: "",
         dnsAccount: projectData
           ? projectData.dnsAccount
             ? projectData.dnsAccount._id
@@ -371,6 +377,12 @@ function ProjectForm({ projectData, editable = true }) {
                     as="input"
                     className="w-full rounded-lg border-gray-200 p-3 text-sm border"
                   />
+                  <Field
+                    name="registrarCard"
+                    placeholder="card"
+                    as="input"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
                 </div>
               </>
             ) : (
@@ -389,8 +401,10 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData && projectData.domainRegistrar
-                            ? `${projectData.domainRegistrar.name} `
+                          projectData
+                            ? projectData.domainRegistrar && projectData.domainRegistrar.name
+                              ? `${projectData.domainRegistrar.name} `
+                              : ""
                             : ""
                         }
                         disabled={!editable}
@@ -402,9 +416,11 @@ function ProjectForm({ projectData, editable = true }) {
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData && projectData.domainRegistrar
+                            projectData
+                            ? projectData.domainRegistrar && projectData.domainRegistrar.name
                               ? `${projectData.domainRegistrar.name} `
                               : ""
+                            : ""
                           }
                         />
                       )}
@@ -412,8 +428,10 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData && projectData.domainRegistrar
-                            ? `${projectData.domainRegistrar.login}`
+                          projectData
+                            ? projectData.domainRegistrar && projectData.domainRegistrar.login
+                              ? `${projectData.domainRegistrar.login} `
+                              : ""
                             : ""
                         }
                         disabled={!editable}
@@ -425,9 +443,11 @@ function ProjectForm({ projectData, editable = true }) {
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData && projectData.domainRegistrar
-                              ? `${projectData.domainRegistrar.login}`
+                            projectData
+                            ? projectData.domainRegistrar && projectData.domainRegistrar.login
+                              ? `${projectData.domainRegistrar.login} `
                               : ""
+                            : ""
                           }
                         />
                       )}
@@ -435,8 +455,10 @@ function ProjectForm({ projectData, editable = true }) {
                     <div className="relative w-full">
                       <Field
                         value={
-                          projectData && projectData.domainRegistrar
-                            ? `${projectData.domainRegistrar.password}`
+                          projectData
+                            ? projectData.domainRegistrar && projectData.domainRegistrar.password
+                              ? `${projectData.domainRegistrar.password} `
+                              : ""
                             : ""
                         }
                         disabled={!editable}
@@ -448,9 +470,38 @@ function ProjectForm({ projectData, editable = true }) {
                       {!editable && (
                         <CopyButton
                           copyValue={
-                            projectData && projectData.domainRegistrar
-                              ? `${projectData.domainRegistrar.password}`
+                            projectData
+                            ? projectData.domainRegistrar && projectData.domainRegistrar.password
+                              ? `${projectData.domainRegistrar.password} `
                               : ""
+                            : ""
+                          }
+                        />
+                      )}
+                    </div>
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData
+                            ? projectData.domainRegistrar && projectData.domainRegistrar.card
+                              ? `${projectData.domainRegistrar.card} `
+                              : ""
+                            : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="card"
+                        placeholder="card"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData
+                            ? projectData.domainRegistrar && projectData.domainRegistrar.card
+                              ? `${projectData.domainRegistrar.card} `
+                              : ""
+                            : ""
                           }
                         />
                       )}
@@ -503,6 +554,12 @@ function ProjectForm({ projectData, editable = true }) {
                     as="input"
                     className="w-full rounded-lg border-gray-200 p-3 text-sm border"
                   />
+                  <Field
+                    name="hostingCard"
+                    placeholder="Card"
+                    as="input"
+                    className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  />
                 </div>
               </>
             ) : (
@@ -522,7 +579,7 @@ function ProjectForm({ projectData, editable = true }) {
                       <Field
                         value={
                           projectData
-                            ? projectData.hosting
+                            ? projectData.hosting && projectData.hosting.name
                               ? `${projectData.hosting.name} `
                               : ""
                             : ""
@@ -530,14 +587,14 @@ function ProjectForm({ projectData, editable = true }) {
                         disabled={!editable}
                         type="text"
                         name="hostingNamePlaceholder"
-                        placeholder="hosting"
+                        placeholder="hostingName"
                         className="w-full rounded-lg border-gray-200 p-3 text-sm border"
                       />
                       {!editable && (
                         <CopyButton
                           copyValue={
                             projectData
-                              ? projectData.hosting
+                              ? projectData.hosting && projectData.hosting.name
                                 ? `${projectData.hosting.name} `
                                 : ""
                               : ""
@@ -549,7 +606,7 @@ function ProjectForm({ projectData, editable = true }) {
                       <Field
                         value={
                           projectData
-                            ? projectData.hosting
+                            ? projectData.hosting && projectData.hosting.login
                               ? `${projectData.hosting.login} `
                               : ""
                             : ""
@@ -557,14 +614,14 @@ function ProjectForm({ projectData, editable = true }) {
                         disabled={!editable}
                         type="text"
                         name="hostingLoginPlaceholder"
-                        placeholder="hosting"
+                        placeholder="hostingLogin"
                         className="w-full rounded-lg border-gray-200 p-3 text-sm border"
                       />
                       {!editable && (
                         <CopyButton
                           copyValue={
                             projectData
-                              ? projectData.hosting
+                              ? projectData.hosting && projectData.hosting.login
                                 ? `${projectData.hosting.login} `
                                 : ""
                               : ""
@@ -576,7 +633,8 @@ function ProjectForm({ projectData, editable = true }) {
                       <Field
                         value={
                           projectData
-                            ? projectData.hosting
+                            ? projectData.hosting &&
+                              projectData.hosting.password
                               ? `${projectData.hosting.password} `
                               : ""
                             : ""
@@ -584,15 +642,43 @@ function ProjectForm({ projectData, editable = true }) {
                         disabled={!editable}
                         type="text"
                         name="hostingPasswordPlaceholder"
-                        placeholder="hosting"
+                        placeholder="hostingPassword"
                         className="w-full rounded-lg border-gray-200 p-3 text-sm border"
                       />
                       {!editable && (
                         <CopyButton
                           copyValue={
                             projectData
-                              ? projectData.hosting
+                              ? projectData.hosting &&
+                                projectData.hosting.password
                                 ? `${projectData.hosting.password} `
+                                : ""
+                              : ""
+                          }
+                        />
+                      )}
+                    </div>
+                    <div className="relative w-full">
+                      <Field
+                        value={
+                          projectData
+                            ? projectData.hosting && projectData.hosting.card
+                              ? `${projectData.hosting.card} `
+                              : ""
+                            : ""
+                        }
+                        disabled={!editable}
+                        type="text"
+                        name="card"
+                        placeholder="card"
+                        className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                      />
+                      {!editable && (
+                        <CopyButton
+                          copyValue={
+                            projectData
+                              ? projectData.hosting && projectData.hosting.card
+                                ? `${projectData.hosting.card} `
                                 : ""
                               : ""
                           }

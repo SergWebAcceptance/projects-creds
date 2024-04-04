@@ -7,7 +7,7 @@ import { encryptText, decryptText } from "@/lib/cryptoUtils";
 export async function POST(req) {
   await dbConnect();
   try {
-    const { name, login, password, projectCategory } = await req.json();
+    const { name, login, password, card, projectCategory } = await req.json();
 
     // Перевірка на наявність Hosting з таким name і login
     let hosting = await Hosting.findOne({ name, login });
@@ -19,6 +19,7 @@ export async function POST(req) {
         name,
         login: encryptedLogin,
         password: encryptedPassword,
+        card,
         projectCategory,
       });
       return new Response(JSON.stringify(hosting), { status: 201 });
@@ -37,7 +38,7 @@ export async function PATCH(req) {
   try {
     await dbConnect();
 
-    const { hostingId, name, login, password, projectCategory } =
+    const { hostingId, name, login, password, card, projectCategory } =
       await req.json();
     const encryptedLogin = encryptText(login);
     const encryptedPassword = encryptText(password);
@@ -48,6 +49,7 @@ export async function PATCH(req) {
           name,
           login: encryptedLogin,
           password: encryptedPassword,
+          card,
           projectCategory,
         },
       }

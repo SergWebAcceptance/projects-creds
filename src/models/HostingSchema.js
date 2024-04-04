@@ -5,6 +5,7 @@ const HostingSchema = new Schema({
   name: { type: String, required: false },
   login: { type: String, required: false },
   password: { type: String, required: false },
+  card: { type: String, required: false },
   projectCategory:{ type: Schema.Types.ObjectId, ref: "ProjectsCategory", required: false }
 });
 
