@@ -99,14 +99,14 @@ export async function GET(req, res) {
       }
 
       // Додавання умови пошуку за доменом, якщо search присутній
-      if (search) {
+      /*if (search) {
         matchStage["$or"] = [
           { name: { $regex: search, $options: "i" } }, // Додавання пошуку по полю email
           { login: { $regex: search, $options: "i" } }, // Додавання пошуку по полю aliases
         ];
-      }
+      }*/
 
-      const totalDomainRegistrars = await DomainRegistrar.aggregate([
+      let totalDomainRegistrars = await DomainRegistrar.aggregate([
         {
           $lookup: {
             from: "projectscategories", // the collection to join
@@ -152,6 +152,18 @@ export async function GET(req, res) {
       }));
 
       if (search) {
+        const searchLower = search.toLowerCase();
+        totalDomainRegistrars = totalDomainRegistrars
+          .map((registrar) => ({
+            ...registrar,
+            login: decryptText(registrar.login),
+            password: decryptText(registrar.password),
+          }))
+          .filter((hosting) => {
+            return (
+              hosting.login.toLowerCase().includes(searchLower) || hosting.name.toLowerCase().includes(searchLower)
+            );
+          });
         return NextResponse.json(
           { registrars: totalDomainRegistrars, total, page, limit },
           { status: 200 }

@@ -138,7 +138,7 @@ export async function GET(req, res) {
         ];
       }
 
-      const totalFtpAccounts = await FtpAccount.aggregate([
+      let totalFtpAccounts = await FtpAccount.aggregate([
         {
           $lookup: {
             from: "projectscategories", // the collection to join
@@ -198,6 +198,12 @@ export async function GET(req, res) {
       }));
 
       if (search) {
+        totalFtpAccounts = totalFtpAccounts.map((ftpAccount) => ({
+          ...ftpAccount,
+          host: decryptText(ftpAccount.host),
+          login: decryptText(ftpAccount.login),
+          password: decryptText(ftpAccount.password),
+        }));
         return NextResponse.json(
           { ftpAccounts: totalFtpAccounts, total, page, limit },
           { status: 200 }

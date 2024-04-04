@@ -93,11 +93,11 @@ export async function GET(req, res) {
         matchStage["projectCategory.name"] = category;
       }
 
-      if (search) {
+      /*if (search) {
         matchStage["login"] = { $regex: search, $options: "i" };
-      }
+      }*/
 
-      const totalGitAccounts = await GitAccount.aggregate([
+      let totalGitAccounts = await GitAccount.aggregate([
         {
           $lookup: {
             from: "projectscategories", // the collection to join
@@ -142,6 +142,16 @@ export async function GET(req, res) {
       }));
 
       if (search) {
+        const searchLower = search.toLowerCase();
+        totalGitAccounts = totalGitAccounts
+          .map((gitAccount) => ({
+            ...gitAccount,
+            login: decryptText(gitAccount.login),
+            password: decryptText(gitAccount.password),
+          }))
+          .filter((hosting) => {
+            return hosting.login.toLowerCase().includes(searchLower);
+          });
         return NextResponse.json(
           { gitAccounts: totalGitAccounts, total, page, limit },
           { status: 200 }

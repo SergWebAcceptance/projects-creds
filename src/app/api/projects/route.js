@@ -249,7 +249,7 @@ export async function GET(req, res) {
         matchStage["domain"] = { $regex: search, $options: "i" };
       }
 
-      const totalProjects = await Project.aggregate([
+      let totalProjects = await Project.aggregate([
         {
           $lookup: {
             from: "projectscategories",

@@ -98,14 +98,14 @@ export async function GET(req, res) {
       }
 
       // Додавання умови пошуку за доменом, якщо search присутній
-      if (search) {
+      /*if (search) {
         matchStage["$or"] = [
           { name: { $regex: search, $options: "i" } }, // Додавання пошуку по полю email
           { login: { $regex: search, $options: "i" } }, // Додавання пошуку по полю aliases
         ];
-      }
+      }*/
 
-      const totalHostings = await Hosting.aggregate([
+      let totalHostings = await Hosting.aggregate([
         {
           $lookup: {
             from: "projectscategories", // the collection to join
@@ -150,6 +150,18 @@ export async function GET(req, res) {
       }));
 
       if (search) {
+        const searchLower = search.toLowerCase();
+        totalHostings = totalHostings
+          .map((hosting) => ({
+            ...hosting,
+            login: decryptText(hosting.login),
+            password: decryptText(hosting.password),
+          }))
+          .filter((hosting) => {
+            return (
+              hosting.login.toLowerCase().includes(searchLower) || hosting.name.toLowerCase().includes(searchLower)
+            );
+          });
         return NextResponse.json(
           { hostings: totalHostings, total, page, limit },
           { status: 200 }

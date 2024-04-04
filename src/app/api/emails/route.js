@@ -16,7 +16,7 @@ export async function POST(req) {
       const encryptedEmail = encryptText(email);
       const encryptedPassword = encryptText(password);
       newEmail = await EmailAccounts.create({
-        email: encryptedEmail,
+        email,
         password: encryptedPassword,
         aliases,
         emailCategory,
@@ -45,7 +45,7 @@ export async function PATCH(req) {
       { _id: emailId }, // Умова, за якою знаходиться документ. Наприклад, за ID.
       {
         $set: {
-          email: encryptedEmail,
+          email,
           password: encryptedPassword,
           aliases,
           projectsCategory,
@@ -96,14 +96,14 @@ export async function GET(req, res) {
       }
 
       // Додавання умови пошуку за доменом, якщо search присутній
-      if (search) {
+     if (search) {
         matchStage["$or"] = [
           { email: { $regex: search, $options: "i" } }, // Додавання пошуку по полю email
           { aliases: { $regex: search, $options: "i" } }, // Додавання пошуку по полю aliases
         ];
       }
 
-      const totalEmails = await EmailAccounts.aggregate([
+      let totalEmails = await EmailAccounts.aggregate([
         {
           $lookup: {
             from: "projectscategories", // the collection to join
@@ -143,11 +143,14 @@ export async function GET(req, res) {
 
       emails = emails.map(email => ({
         ...email,
-        email: decryptText(email.email),
         password: decryptText(email.password),
       }));
 
       if(search) {
+        totalEmails = totalEmails.map(email => ({
+          ...email,
+          password: decryptText(email.password),
+        }));
         return NextResponse.json({ emails: totalEmails, total, page, limit }, { status: 200 });
       } else {
         return NextResponse.json({ emails, total, page, limit }, { status: 200 });
