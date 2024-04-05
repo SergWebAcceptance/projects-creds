@@ -250,7 +250,7 @@ export async function GET(req, res) {
         matchStage["domain"] = { $regex: search, $options: "i" };
       }
 
-      let totalProjects = await Project.aggregate([
+      /*let totalProjects = await Project.aggregate([
         {
           $lookup: {
             from: "projectscategories",
@@ -267,7 +267,9 @@ export async function GET(req, res) {
         },
       ]);
 
-      const total = totalProjects.length > 0 ? totalProjects.length : 0;
+      const total = totalProjects.length > 0 ? totalProjects.length : 0;*/
+
+      const total = countPerPage;
 
       const projects = await Project.aggregate([
         {
@@ -290,7 +292,7 @@ export async function GET(req, res) {
 
       if (search) {
         return NextResponse.json(
-          { projects: totalProjects, total, page, limit },
+          { projects, total, page, limit },
           { status: 200 }
         );
       } else {

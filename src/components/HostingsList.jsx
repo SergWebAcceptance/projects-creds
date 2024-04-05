@@ -4,6 +4,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useProjects } from "@/contexts/ProjectsContext";
 import { Eye, Trash2 } from "lucide-react";
+import { countPerPage } from "@/lib/constants";
 
 function HostingsList() {
   const { projectsCategory, setProjectsCategory } = useProjects();
