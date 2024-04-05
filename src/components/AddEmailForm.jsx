@@ -64,9 +64,9 @@ function AddEmailForm({ projectData, editable = true }) {
   const CopyButton = ({ copyValue }) => (
     <CopyToClipboard text={copyValue} onCopy={() => setCopied(copyValue)}>
       {copied === copyValue ? (
-        <CopyCheck className="cursor-pointer opacity-40 absolute top-1 right-4 w-5" />
+        <CopyCheck className="cursor-pointer opacity-40 absolute top-2.5 right-4 w-5" />
       ) : (
-        <Copy className="cursor-pointer opacity-40 absolute top-1 right-4 w-5" />
+        <Copy className="cursor-pointer opacity-40 absolute top-2.5 right-4 w-5" />
       )}
     </CopyToClipboard>
   );

@@ -24,7 +24,6 @@ function EmailsList() {
             `/api/emails?category=${projectsCategory}&search=${searchQuery}&page=${currentPage}&limit=10`
           );
           setEmails(response.data.emails);
-          console.log(response.data);
           setTotalPages(Math.ceil(response.data.total / 10));
         } catch (error) {
           console.error("Could not fetch projects", error);
