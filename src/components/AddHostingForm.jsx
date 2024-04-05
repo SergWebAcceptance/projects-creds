@@ -37,7 +37,7 @@ function AddHostingForm({ projectData, editable = true }) {
           login: values.login,
           password: values.password,
           card: values.card,
-          projectCategory: values.projectCategory
+          projectCategory: values.projectCategory,
         });
       } else {
         await axios.patch("/api/hostings", {
@@ -46,7 +46,7 @@ function AddHostingForm({ projectData, editable = true }) {
           login: values.login,
           password: values.password,
           card: values.card,
-          projectCategory: values.projectCategory
+          projectCategory: values.projectCategory,
         });
       }
 
@@ -66,9 +66,9 @@ function AddHostingForm({ projectData, editable = true }) {
   const CopyButton = ({ copyValue }) => (
     <CopyToClipboard text={copyValue} onCopy={() => setCopied(copyValue)}>
       {copied === copyValue ? (
-        <CopyCheck  className="cursor-pointer opacity-40 absolute top-1 right-4 w-5" />
+        <CopyCheck className="cursor-pointer opacity-40 absolute top-2.5 right-4 w-5" />
       ) : (
-        <Copy className="cursor-pointer opacity-40 absolute top-1 right-4 w-5" />
+        <Copy className="cursor-pointer opacity-40 absolute top-2.5 right-4 w-5" />
       )}
     </CopyToClipboard>
   );
@@ -90,48 +90,59 @@ function AddHostingForm({ projectData, editable = true }) {
       {({ isSubmitting, setFieldValue, values }) => (
         <Form className={`mt-6 mb-6 space-y-4 ${!editable && "disabled"}`}>
           <div className="domain-info flex flex-col sm:flex-row gap-4">
-            <div className="w-full space-y-2 relative">
-              <Field
-                type="text"
-                name="name"
-                placeholder="name"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                disabled={!editable}
-              />
-              {!editable && <CopyButton copyValue={values.name} />}
+            <div className="w-full space-y-2 ">
+              <h2>Hosting</h2>
+              <div className="relative">
+                <Field
+                  type="text"
+                  name="name"
+                  placeholder="name"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  disabled={!editable}
+                />
+                {!editable && <CopyButton copyValue={values.name} />}
+              </div>
             </div>
             <div className="w-full space-y-2 relative">
-              <Field
-                type="text"
-                name="login"
-                placeholder="login"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                disabled={!editable}
-              />
-              {!editable && <CopyButton copyValue={values.login} />}
+              <h2>Login</h2>
+              <div className="relative">
+                <Field
+                  type="text"
+                  name="login"
+                  placeholder="login"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  disabled={!editable}
+                />
+                {!editable && <CopyButton copyValue={values.login} />}
+              </div>
             </div>
             <div className="w-full space-y-2 relative">
-              <Field
-                type="text"
-                name="password"
-                placeholder="password"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                disabled={!editable}
-              />
-              {!editable && <CopyButton copyValue={values.password} />}
+              <h2>Password</h2>
+              <div className="relative">
+                <Field
+                  type="text"
+                  name="password"
+                  placeholder="password"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  disabled={!editable}
+                />
+                {!editable && <CopyButton copyValue={values.password} />}
+              </div>
             </div>
             <div className="w-full space-y-2 relative">
-              <Field
-                type="text"
-                name="card"
-                placeholder="card"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                disabled={!editable}
-              />
-              {!editable && <CopyButton copyValue={values.card} />}
+              <h2>Card</h2>
+              <div className="relative">
+                <Field
+                  type="text"
+                  name="card"
+                  placeholder="card"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  disabled={!editable}
+                />
+                {!editable && <CopyButton copyValue={values.card} />}
+              </div>
             </div>
           </div>
-
 
           <div className={`space-y-2`}>
             <h2>Project category</h2>
@@ -146,7 +157,9 @@ function AddHostingForm({ projectData, editable = true }) {
                 />
               ) : (
                 <Field
-                  value={projectData ? `${projectData.projectCategory.name}` : ""}
+                  value={
+                    projectData ? `${projectData.projectCategory.name}` : ""
+                  }
                   disabled={!editable}
                   type="text"
                   name="hostingPlaceholder"

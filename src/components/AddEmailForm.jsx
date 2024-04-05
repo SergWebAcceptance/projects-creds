@@ -64,7 +64,7 @@ function AddEmailForm({ projectData, editable = true }) {
   const CopyButton = ({ copyValue }) => (
     <CopyToClipboard text={copyValue} onCopy={() => setCopied(copyValue)}>
       {copied === copyValue ? (
-        <CopyCheck  className="cursor-pointer opacity-40 absolute top-1 right-4 w-5" />
+        <CopyCheck className="cursor-pointer opacity-40 absolute top-1 right-4 w-5" />
       ) : (
         <Copy className="cursor-pointer opacity-40 absolute top-1 right-4 w-5" />
       )}
@@ -88,28 +88,35 @@ function AddEmailForm({ projectData, editable = true }) {
         <Form className={`mt-6 mb-6 space-y-4 ${!editable && "disabled"}`}>
           <div className="domain-info flex flex-col sm:flex-row gap-4">
             <div className="w-full space-y-2 relative">
-              <Field
-                type="text"
-                name="email"
-                placeholder="email"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                disabled={!editable}
-              />
-              {!editable && <CopyButton copyValue={values.email} />}
+              <h2>Email</h2>
+              <div className="relative">
+                <Field
+                  type="text"
+                  name="email"
+                  placeholder="email"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  disabled={!editable}
+                />
+                {!editable && <CopyButton copyValue={values.email} />}
+              </div>
             </div>
             <div className="w-full space-y-2 relative">
-              <Field
-                type="text"
-                name="password"
-                placeholder="password"
-                className="w-full rounded-lg border-gray-200 p-3 text-sm border"
-                disabled={!editable}
-              />
-              {!editable && <CopyButton copyValue={values.password} />}
+              <h2>Password</h2>
+              <div className="relative">
+                <Field
+                  type="text"
+                  name="password"
+                  placeholder="password"
+                  className="w-full rounded-lg border-gray-200 p-3 text-sm border"
+                  disabled={!editable}
+                />
+                {!editable && <CopyButton copyValue={values.password} />}
+              </div>
             </div>
           </div>
 
           <div className="w-full space-y-2">
+          <h2>Aliases</h2>
             <Field
               as="textarea"
               name="aliases"
