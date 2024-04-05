@@ -4,6 +4,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useProjects } from "@/contexts/ProjectsContext";
 import { Eye, Trash2 } from "lucide-react";
+import { countPerPage } from "@/lib/constants";
 
 function DnsAccountsList() {
   const { projectsCategory, setProjectsCategory } = useProjects();
@@ -21,11 +22,11 @@ function DnsAccountsList() {
       const fetchEmails = async () => {
         try {
           const response = await axios.get(
-            `/api/dns?category=${projectsCategory}&search=${searchQuery}&page=${currentPage}&limit=10`
+            `/api/dns?category=${projectsCategory}&search=${searchQuery}&page=${currentPage}&limit=${countPerPage}`
           );
           setDnsAccounts(response.data.dnsAccounts);
           console.log(response.data);
-          setTotalPages(Math.ceil(response.data.total / 10));
+          setTotalPages(Math.ceil(response.data.total / countPerPage));
         } catch (error) {
           console.error("Could not fetch projects", error);
         }

@@ -4,6 +4,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useProjects } from "@/contexts/ProjectsContext";
 import { Eye, Trash2 } from "lucide-react";
+import { countPerPage } from "@/lib/constants";
 
 function DomainRegistrarsList() {
   const { projectsCategory, setProjectsCategory } = useProjects();
@@ -21,11 +22,11 @@ function DomainRegistrarsList() {
       const fetchEmails = async () => {
         try {
           const response = await axios.get(
-            `/api/registrars?category=${projectsCategory}&search=${searchQuery}&page=${currentPage}&limit=10`
+            `/api/registrars?category=${projectsCategory}&search=${searchQuery}&page=${currentPage}&limit=${countPerPage}`
           );
           setRegistrars(response.data.registrars);
           console.log(response.data);
-          setTotalPages(Math.ceil(response.data.total / 10));
+          setTotalPages(Math.ceil(response.data.total / countPerPage));
         } catch (error) {
           console.error("Could not fetch projects", error);
         }
@@ -65,7 +66,7 @@ function DomainRegistrarsList() {
             : "border-gray-100 bg-white text-gray-900"
         } text-center leading-8`}
       >
-        <a
+        <Link
           href="#"
           onClick={(e) => {
             e.preventDefault();
@@ -73,7 +74,7 @@ function DomainRegistrarsList() {
           }}
         >
           {p}
-        </a>
+        </Link>
       </li>
     );
   }

@@ -4,6 +4,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useProjects } from "@/contexts/ProjectsContext";
 import { Eye, Trash2 } from "lucide-react";
+import { countPerPage } from "@/lib/constants";
 
 function EmailsList() {
   const { projectsCategory, setProjectsCategory } = useProjects();
@@ -21,10 +22,10 @@ function EmailsList() {
       const fetchEmails = async () => {
         try {
           const response = await axios.get(
-            `/api/emails?category=${projectsCategory}&search=${searchQuery}&page=${currentPage}&limit=10`
+            `/api/emails?category=${projectsCategory}&search=${searchQuery}&page=${currentPage}&limit=${countPerPage}`
           );
           setEmails(response.data.emails);
-          setTotalPages(Math.ceil(response.data.total / 10));
+          setTotalPages(Math.ceil(response.data.total / countPerPage));
         } catch (error) {
           console.error("Could not fetch projects", error);
         }

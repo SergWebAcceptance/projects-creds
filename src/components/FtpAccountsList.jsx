@@ -21,11 +21,11 @@ function FtpAccountsList() {
       const fetchEmails = async () => {
         try {
           const response = await axios.get(
-            `/api/ftp?category=${projectsCategory}&search=${searchQuery}&page=${currentPage}&limit=10`
+            `/api/ftp?category=${projectsCategory}&search=${searchQuery}&page=${currentPage}&limit=${countPerPage}`
           );
           setFtpAccounts(response.data.ftpAccounts);
           console.log(response.data);
-          setTotalPages(Math.ceil(response.data.total / 10));
+          setTotalPages(Math.ceil(response.data.total / countPerPage));
         } catch (error) {
           console.error("Could not fetch projects", error);
         }

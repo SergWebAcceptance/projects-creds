@@ -3,6 +3,7 @@ import DomainRegistrar from "@/models/DomainRegistrar";
 import { NextResponse } from "next/server";
 import ProjectsCategory from "@/models/ProjectsCategory";
 import { encryptText, decryptText } from "@/lib/cryptoUtils";
+import { countPerPage } from "@/lib/constants";
 
 export async function POST(req) {
   await dbConnect();
@@ -71,7 +72,7 @@ export async function GET(req, res) {
     const category = url.searchParams.get("category");
     const search = url.searchParams.get("search");
     const page = parseInt(url.searchParams.get("page")) || 1;
-    const limit = parseInt(url.searchParams.get("limit")) || 10;
+    const limit = parseInt(url.searchParams.get("limit")) || countPerPage;
     const skip = (page - 1) * limit;
 
     if (id) {

@@ -21,11 +21,11 @@ function GitAccountsList() {
       const fetchEmails = async () => {
         try {
           const response = await axios.get(
-            `/api/gitAccounts?category=${projectsCategory}&search=${searchQuery}&page=${currentPage}&limit=10`
+            `/api/gitAccounts?category=${projectsCategory}&search=${searchQuery}&page=${currentPage}&limit=${countPerPage}`
           );
           setGitAccounts(response.data.gitAccounts);
           console.log(response.data);
-          setTotalPages(Math.ceil(response.data.total / 10));
+          setTotalPages(Math.ceil(response.data.total / countPerPage));
         } catch (error) {
           console.error("Could not fetch projects", error);
         }

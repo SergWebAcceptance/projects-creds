@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useProjects } from "@/contexts/ProjectsContext";
 import { Eye, Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { countPerPage } from "@/lib/constants";
 
 function ProjectsList() {
   const { data: session, status } = useSession();
@@ -23,11 +24,11 @@ function ProjectsList() {
       const fetchProjects = async () => {
         try {
           const response = await axios.get(
-            `/api/projects?category=${projectsCategory}&search=${searchQuery}&page=${currentPage}&limit=10`
+            `/api/projects?category=${projectsCategory}&search=${searchQuery}&page=${currentPage}&limit=${countPerPage}`
           );
           setProjects(response.data.projects);
           console.log("data total", response.data.projects);
-          setTotalPages(Math.ceil(response.data.total / 10));
+          setTotalPages(Math.ceil(response.data.total / countPerPage));
         } catch (error) {
           console.error("Could not fetch projects", error);
         }
