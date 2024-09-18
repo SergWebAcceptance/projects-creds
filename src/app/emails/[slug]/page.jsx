@@ -13,7 +13,7 @@ function SingleProject({ params: { slug } }) {
     const fetchEmail = async () => {
       try {
         const response = await axios.get(`/api/emails?id=${slug}`);
-        console.log(response.data);
+        console.log("email", response.data.email);
         setEmail(response.data.email);
       } catch (error) {
         console.error("Could not fetch projects", error);

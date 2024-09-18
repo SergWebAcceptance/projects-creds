@@ -13,7 +13,7 @@ export const ProjectsProvider = ({ children }) => {
   useEffect(() => {
     if (status === "authenticated" && session?.user?.role) {
       const defaultCategory =
-        session.user.role !== "manager" ? "Anywires" : "TradeProof";
+        session.user.role !== "manager" ? "Development" : "TradeProof";
       setProjectsCategory(defaultCategory);
     } else if (status === "unauthenticated") {
       // Встановіть значення за замовчуванням або обробіть відсутність аутентифікації

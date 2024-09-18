@@ -29,15 +29,15 @@ function Header() {
                   <li>
                     <Link
                       className={`text-gray-500 pb-1 border-b-2  transition hover:text-gray-500/75 ${
-                        projectsCategory == "Anywires"
+                        projectsCategory == "Development"
                           ? "border-teal-600"
                           : "border-white"
                       }`}
-                      onClick={() => setProjectsCategory("Anywires")}
+                      onClick={() => setProjectsCategory("Development")}
                       href={"/"}
                       data-category={projectsCategory}
                     >
-                      Anywires
+                      Development
                     </Link>
                   </li>
                 )}

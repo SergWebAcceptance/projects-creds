@@ -86,9 +86,10 @@ export async function GET(req, res) {
         );
       } else {
         // Decrypt login and password here
-        email.email = decryptText(email.email);
+        //email.email = decryptText(email.email);
         email.password = decryptText(email.password);
       }
+      console.log(email);
       return NextResponse.json({ email }, { status: 200 });
     } else if (category) {
       let matchStage = {};
