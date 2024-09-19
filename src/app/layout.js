@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import { ProjectsProvider } from "@/contexts/ProjectsContext";
 import Provider from "@/lib/SessionProvider";
 import Preloader from "@/components/Preloader";
-
+import ConfirmDeleteModal from "@/components/ConfirmDeleteModal";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
     <Provider>
       <html lang="en">
         <body className={inter.className}>
-          <Preloader/>
+          <Preloader />
           <ProjectsProvider>
             <Header />
             <main className="mx-auto max-w-screen-xl px-4 mb-10 sm:px-6 lg:px-8">
@@ -27,6 +27,6 @@ export default function RootLayout({ children }) {
           </ProjectsProvider>
         </body>
       </html>
-      </Provider>
+    </Provider>
   );
 }

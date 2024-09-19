@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useProjects } from "@/contexts/ProjectsContext";
 import { Eye, Trash2 } from "lucide-react";
 import { countPerPage } from "@/lib/constants";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 function DnsAccountsList() {
   const { projectsCategory, setProjectsCategory } = useProjects();
@@ -12,6 +13,8 @@ function DnsAccountsList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [selectedItem, setSelectedItem] = useState(null); // State for the selected item
 
   useEffect(() => {
     console.log("projectsCategory", projectsCategory);
@@ -49,6 +52,23 @@ function DnsAccountsList() {
       );
       // Тут можна додати обробку помилок, наприклад, показати повідомлення користувачу
     }
+  };
+
+  const openDeleteModal = (item) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
+  };
+
+  const confirmDelete = () => {
+    if (selectedItem) {
+      handleRemove(selectedItem._id);
+    }
+    closeModal();
   };
 
   const handlePageChange = (newPage) => {
@@ -146,7 +166,7 @@ function DnsAccountsList() {
                   </Link>
                   <button
                     className="block rounded-md bg-red-600 px-2 py-2 text-sm font-medium text-white transition hover:bg-red-700"
-                    onClick={() => handleRemove(dnsAccount._id)}
+                    onClick={() => openDeleteModal(dnsAccount)}
                   >
                     <Trash2 />
                   </button>
@@ -220,6 +240,14 @@ function DnsAccountsList() {
           )}
         </ol>
       )}
+
+      {/* Modal for delete confirmation */}
+      <ConfirmDeleteModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onConfirm={confirmDelete}
+        itemName={selectedItem ? selectedItem.name : ""}
+      />
     </div>
   );
 }

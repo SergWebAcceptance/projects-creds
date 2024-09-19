@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useProjects } from "@/contexts/ProjectsContext";
 import { Eye, Trash2 } from "lucide-react";
 import { countPerPage } from "@/lib/constants";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 function GitAccountsList() {
   const { projectsCategory, setProjectsCategory } = useProjects();
@@ -12,6 +13,8 @@ function GitAccountsList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [selectedItem, setSelectedItem] = useState(null); // State for the selected item
 
   useEffect(() => {
     console.log("projectsCategory", projectsCategory);
@@ -49,6 +52,23 @@ function GitAccountsList() {
       );
       // Тут можна додати обробку помилок, наприклад, показати повідомлення користувачу
     }
+  };
+
+  const openDeleteModal = (item) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
+  };
+
+  const confirmDelete = () => {
+    if (selectedItem) {
+      handleRemove(selectedItem._id);
+    }
+    closeModal();
   };
 
   const handlePageChange = (newPage) => {
@@ -134,7 +154,7 @@ function GitAccountsList() {
                 className="projectRow flex items-center px-4 py-2 rounded mb-4 bg-slate-100 justify-between shadow-md"
               >
                 <div className="w-4/5 flex flex-col sm:flex-row">
-                {gitAccount.login}
+                  {gitAccount.login}
                 </div>
                 <div className="flex gap-2 w-1/5 justify-end">
                   <Link
@@ -145,7 +165,7 @@ function GitAccountsList() {
                   </Link>
                   <button
                     className="block rounded-md bg-red-600 px-2 py-2 text-sm font-medium text-white transition hover:bg-red-700"
-                    onClick={() => handleRemove(gitAccount._id)}
+                    onClick={() => openDeleteModal(gitAccount)}
                   >
                     <Trash2 />
                   </button>
@@ -219,6 +239,14 @@ function GitAccountsList() {
           )}
         </ol>
       )}
+
+      {/* Modal for delete confirmation */}
+      <ConfirmDeleteModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onConfirm={confirmDelete}
+        itemName={selectedItem ? selectedItem.login : ""}
+      />
     </div>
   );
 }

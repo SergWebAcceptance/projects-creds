@@ -4,9 +4,14 @@ import axios from "axios";
 import Link from "next/link";
 import { useProjects } from "@/contexts/ProjectsContext";
 import { Eye, Trash2 } from "lucide-react";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 function UserList() {
   const [users, setUsers] = useState([]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [selectedItem, setSelectedItem] = useState(null); // State for the selected item
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -36,6 +41,23 @@ function UserList() {
     }
   };
 
+  const openDeleteModal = (item) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
+  };
+
+  const confirmDelete = () => {
+    if (selectedItem) {
+      handleRemove(selectedItem._id);
+    }
+    closeModal();
+  };
+
   return (
     <div className=" overflow-x-auto">
       {users.length > 0 ? (
@@ -48,9 +70,7 @@ function UserList() {
               <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-left">
                 Role
               </th>
-              <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-right">
-                
-              </th>
+              <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-right"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -65,7 +85,7 @@ function UserList() {
                 <td className="whitespace-nowrap px-4 py-2 text-gray-700 text-right">
                   <button
                     className="rounded-md bg-red-600 px-2 py-2 text-sm font-medium text-white transition hover:bg-red-700"
-                    onClick={() => handleRemove(user._id)}
+                    onClick={() => openDeleteModal(user)}
                   >
                     <Trash2 />
                   </button>
@@ -77,6 +97,14 @@ function UserList() {
       ) : (
         <p>...</p>
       )}
+
+      {/* Modal for delete confirmation */}
+      <ConfirmDeleteModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onConfirm={confirmDelete}
+        itemName={selectedItem ? selectedItem.email : ""}
+      />
     </div>
   );
 }

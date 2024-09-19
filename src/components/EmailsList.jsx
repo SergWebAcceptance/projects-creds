@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useProjects } from "@/contexts/ProjectsContext";
 import { Eye, Trash2 } from "lucide-react";
 import { countPerPage } from "@/lib/constants";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 function EmailsList() {
   const { projectsCategory, setProjectsCategory } = useProjects();
@@ -12,6 +13,9 @@ function EmailsList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [selectedItem, setSelectedItem] = useState(null); // State for the selected item
 
   useEffect(() => {
     console.log("projectsCategory", projectsCategory);
@@ -48,6 +52,23 @@ function EmailsList() {
       );
       // Тут можна додати обробку помилок, наприклад, показати повідомлення користувачу
     }
+  };
+
+  const openDeleteModal = (item) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
+  };
+
+  const confirmDelete = () => {
+    if (selectedItem) {
+      handleRemove(selectedItem._id);
+    }
+    closeModal();
   };
 
   const handlePageChange = (newPage) => {
@@ -141,8 +162,8 @@ function EmailsList() {
                     <Eye />
                   </Link>
                   <button
-                    className="block rounded-md bg-red-600 px-2 py-2 text-sm font-medium text-white transition hover:bg-red-700"
-                    onClick={() => handleRemove(email._id)}
+                    className="flex gap-2 items-center rounded-md bg-red-600 px-2 py-2 text-sm font-medium text-white transition hover:bg-red-700"
+                    onClick={() => openDeleteModal(email)}
                   >
                     <Trash2 />
                   </button>
@@ -216,6 +237,14 @@ function EmailsList() {
           )}
         </ol>
       )}
+
+      {/* Modal for delete confirmation */}
+      <ConfirmDeleteModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onConfirm={confirmDelete}
+        itemName={selectedItem ? selectedItem.email : ""}
+      />
     </div>
   );
 }

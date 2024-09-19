@@ -1,4 +1,3 @@
-"use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
@@ -6,6 +5,7 @@ import { useProjects } from "@/contexts/ProjectsContext";
 import { Eye, Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { countPerPage } from "@/lib/constants";
+import ConfirmDeleteModal from "./ConfirmDeleteModal"; // Import the modal component
 
 function ProjectsList() {
   const { data: session, status } = useSession();
@@ -14,9 +14,10 @@ function ProjectsList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [selectedItem, setSelectedItem] = useState(null); // State for the selected item
 
   useEffect(() => {
-    console.log("projectsCategory", projectsCategory);
     if (
       projectsCategory !== "DefaultCategory" &&
       projectsCategory.trim() !== ""
@@ -27,7 +28,6 @@ function ProjectsList() {
             `/api/projects?category=${projectsCategory}&search=${searchQuery}&page=${currentPage}&limit=${countPerPage}`
           );
           setProjects(response.data.projects);
-          console.log("data total", response.data.projects);
           setTotalPages(Math.ceil(response.data.total / countPerPage));
         } catch (error) {
           console.error("Could not fetch projects", error);
@@ -39,17 +39,31 @@ function ProjectsList() {
 
   const handleRemove = async (id) => {
     try {
-      // Використання axios.delete з конфігурацією для включення тіла запиту
       await axios.delete(`/api/projects`, { data: { id } });
-      // Оновлення стану для відображення змін без перезавантаження
       setProjects(projects.filter((project) => project._id !== id));
     } catch (error) {
       console.error(
         "Could not delete project",
         error.response?.data?.message || error.message
       );
-      // Тут можна додати обробку помилок, наприклад, показати повідомлення користувачу
     }
+  };
+
+  const openDeleteModal = (item) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedItem(null);
+  };
+
+  const confirmDelete = () => {
+    if (selectedItem) {
+      handleRemove(selectedItem._id);
+    }
+    closeModal();
   };
 
   const handlePageChange = (newPage) => {
@@ -83,11 +97,7 @@ function ProjectsList() {
   return (
     <div>
       <div className="search-bar mb-4">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-          }}
-        >
+        <form onSubmit={(e) => e.preventDefault()}>
           <div className="relative">
             <input
               value={searchQuery}
@@ -97,14 +107,12 @@ function ProjectsList() {
               placeholder="Search for..."
               className="w-full border rounded-md border-gray-200 py-2.5 px-4 pe-10 shadow-sm sm:text-sm"
             />
-
             <span className="absolute inset-y-0 end-0 grid w-10 place-content-center">
               <button
                 type="button"
                 className="text-gray-600 hover:text-gray-700"
               >
                 <span className="sr-only">Search</span>
-
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -143,7 +151,7 @@ function ProjectsList() {
                   </Link>
                   <button
                     className="flex gap-2 items-center rounded-md bg-red-600 px-2 py-2 text-sm font-medium text-white transition hover:bg-red-700"
-                    onClick={() => handleRemove(project._id)}
+                    onClick={() => openDeleteModal(project)}
                   >
                     <Trash2 />
                   </button>
@@ -151,7 +159,6 @@ function ProjectsList() {
               </div>
             ))}
           </div>
-
         </div>
       ) : (
         <p>...</p>
@@ -218,6 +225,14 @@ function ProjectsList() {
           )}
         </ol>
       )}
+
+      {/* Modal for delete confirmation */}
+      <ConfirmDeleteModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onConfirm={confirmDelete}
+        itemName={selectedItem ? selectedItem.domain : ""}
+      />
     </div>
   );
 }
